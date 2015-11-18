@@ -1,0 +1,250 @@
+@import url(https://fonts.googleapis.com/css?family=Lora:400,700,400italic|Montserrat:400,700);
+@import url(https://fonts.googleapis.com/css?family=Lora:400,700,400italic|Montserrat:400,700);
+/* line 1, ../sass/_main.scss */
+.navbar-inverse {
+  background-image: none;
+  background-color: #F7F7F7;
+  border-bottom: 5px solid #E0DFDE;
+}
+
+/* line 7, ../sass/_main.scss */
+.footer {
+  background-image: none;
+  background-color: #F7F7F7;
+  border-top: 5px solid #E0DFDE;
+}
+
+/* line 13, ../sass/_main.scss */
+.navbar-inverse .navbar-nav > li > a {
+  color: #443A31;
+  font-size: 15px;
+  text-shadow: none;
+  font-family: "Montserrat", sans-serif;
+}
+
+/* line 20, ../sass/_main.scss */
+.navbar-inverse .navbar-nav > li > a:hover {
+  color: #009EE0;
+}
+
+/* line 24, ../sass/_main.scss */
+.navbar-inverse .btn-default {
+  color: #443A31;
+  background-image: none;
+  border: 0;
+  -moz-box-shadow: none;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  text-shadow: none;
+  background-color: transparent;
+  font-size: 20px;
+  line-height: 20px;
+  padding: 15px;
+}
+
+/* line 36, ../sass/_main.scss */
+.btn-default:hover, .btn-default.active.focus, .btn-default.active:focus,
+.btn-default.active:hover, .btn-default:active.focus,
+.btn-default:active:focus, .btn-default:active:hover,
+.open > .dropdown-toggle.btn-default.focus,
+.open > .dropdown-toggle.btn-default:focus, .open > .dropdown-toggle.btn-default:hover {
+  color: #009EE0;
+  background-image: none;
+  border: 0;
+  -moz-box-shadow: none;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  text-shadow: none;
+  background-color: transparent;
+  font-size: 20px;
+  line-height: 20px;
+  padding: 15px;
+  outline: none;
+}
+
+/* line 53, ../sass/_main.scss */
+.web2py-menu-active {
+  border-bottom: 5px solid #009EE0;
+  margin-bottom: -5px;
+}
+
+/* line 58, ../sass/_main.scss */
+.lookfor {
+  width: 96%;
+  position: relative;
+}
+/* line 62, ../sass/_main.scss */
+.lookfor h1 {
+  text-align: center;
+  margin-bottom: 20px;
+  font-family: "Lora", serif;
+  color: #443A31;
+}
+/* line 69, ../sass/_main.scss */
+.lookfor .searchitem {
+  color: #443A31;
+  font-size: 30vh;
+  width: 33%;
+  display: block;
+  float: left;
+  position: relative;
+  text-align: center;
+  cursor: pointer;
+}
+/* line 78, ../sass/_main.scss */
+.lookfor .searchitem p {
+  font-size: 22px;
+  font-family: "Lora", serif;
+  text-transform: uppercase;
+}
+/* line 85, ../sass/_main.scss */
+.lookfor .searchitem:hover {
+  text-decoration: none;
+  color: #009EE0;
+}
+/* line 90, ../sass/_main.scss */
+.lookfor #university {
+  border-left: 3px solid #443A31;
+  border-right: 3px solid #443A31;
+}
+
+/* line 96, ../sass/_main.scss */
+.dropdown-header {
+  text-align: center;
+}
+
+/* line 3, ../sass/craftmap.scss */
+#content {
+  margin: 20px auto 0;
+  width: 1000px;
+}
+
+/* line 8, ../sass/craftmap.scss */
+.demo1 {
+  float: left;
+  width: 1000px;
+  height: 600px;
+  -moz-box-shadow: 0 0 5px #ddd;
+  -webkit-box-shadow: 0 0 5px #ddd;
+  box-shadow: 0 0 5px #ddd;
+}
+
+/* line 18, ../sass/craftmap.scss */
+.menu {
+  margin-bottom: 0px;
+  text-align: center;
+}
+
+/* line 23, ../sass/craftmap.scss */
+.menu a {
+  color: #D7363A;
+  font-size: 11px;
+  font-weight: bold;
+  margin: 0 10px;
+}
+
+/* line 30, ../sass/craftmap.scss */
+.preloader {
+  background: url(../images/loader.gif) no-repeat center #fff;
+}
+
+/* line 34, ../sass/craftmap.scss */
+.marker {
+  display: block;
+  text-indent: -9999px;
+  width: 40px;
+  height: 40px;
+  outline: none;
+  background: url(../images/markers/pin1_blue.png) no-repeat;
+  background-size: contain;
+  cursor: pointer;
+}
+
+/* line 45, ../sass/craftmap.scss */
+.popup {
+  width: 300px;
+  position: absolute;
+  padding: 8px;
+  background: #2a2a2a;
+  color: #fff;
+  font-weight: bold;
+  font-size: 11px;
+  line-height: 20px;
+}
+
+/* line 56, ../sass/craftmap.scss */
+.popup h3 {
+  color: #52acf1;
+  margin: 0;
+  margin-bottom: 10px;
+  font-family: "Lora", serif;
+  font-weight: normal;
+  font-size: 20px;
+}
+
+/* line 65, ../sass/craftmap.scss */
+.popup a {
+  color: white;
+}
+
+/* line 69, ../sass/craftmap.scss */
+.popup a:hover {
+  color: #52acf1;
+  text-decoration: none;
+}
+
+/* line 74, ../sass/craftmap.scss */
+.popup .close {
+  display: block;
+  text-indent: -9999px;
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 16px;
+  height: 16px;
+  outline: none;
+  background: url(../images/close.jpg) no-repeat;
+  cursor: pointer;
+  opacity: 1;
+}
+
+/* line 88, ../sass/craftmap.scss */
+.relative {
+  position: relative;
+}
+
+/* line 92, ../sass/craftmap.scss */
+.controls {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 20;
+}
+
+/* line 99, ../sass/craftmap.scss */
+.controls a {
+  background: #2a2a2a;
+  background: rgba(0, 0, 0, 0.6);
+  display: block;
+  float: left;
+  clear: both;
+  font-size: 11px;
+  font-weight: bold;
+  line-height: 25px;
+  margin-bottom: 2px;
+  outline: none;
+  padding: 0 15px;
+  text-decoration: none;
+}
+
+/* line 114, ../sass/craftmap.scss */
+.controls a:hover {
+  background: #eee;
+  color: #2a2a2a;
+}
+
+/* line 119, ../sass/craftmap.scss */
+.controls .active {
+  background: #52acf1;
+  color: #fff;
+}

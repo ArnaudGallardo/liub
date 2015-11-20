@@ -98,3 +98,35 @@ CREATE TABLE advice(
     content_type CHAR(512)
 );
 success!
+timestamp: 2015-11-19T15:00:34.221372
+ALTER TABLE university ADD info TEXT;
+timestamp: 2015-11-19T15:00:34.229209
+ALTER TABLE university ADD lat DOUBLE;
+timestamp: 2015-11-19T15:00:34.230128
+ALTER TABLE university ADD lng DOUBLE;
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!
+success!

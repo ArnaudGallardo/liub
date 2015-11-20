@@ -60,6 +60,17 @@ def lang():
     return "ok"
 
 
+def universities():
+    data = db().select(db.university.ALL)
+    return response.json({'places': data})
+
+def add_university():
+    form = SQLFORM(db.university)
+    if form.process().accepted:
+        session.flash = T('The data was inserted')
+        redirect(URL('default', 'index'))
+    return dict(form=form)
+
 def user():
     """
     exposes:

@@ -99,9 +99,11 @@ db.define_table('promotion',
                 )
 
 db.define_table('university',
-                Field('continent'),
+                Field('name'),
+                Field('lat', 'double'),
+                Field('lng', 'double'),
                 Field('country'),
-                Field('name')
+                Field('info', 'text')
                 )
 
 db.define_table('th_year',

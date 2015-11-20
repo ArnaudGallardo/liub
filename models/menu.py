@@ -31,7 +31,7 @@ response.menu = [
 DEVELOPMENT_MENU = False
 
 def get_lang_switch(language):
-    if (language is None) or (language == 'fr'):
+    if (language == 'fr'):
         return 'english'
     return 'français'
 

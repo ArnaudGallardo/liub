@@ -18,16 +18,3 @@
     </a>
 </div>
 {{pass}}
-<script>
-    $(function(){
-        $('#lang').on("click", function() {
-            jQuery.post(
-                '{{=URL('lang', user_signature=True)}}', // URL for the AJAX call
-                {
-                  'lang': '{{=session.language}}'
-                }
-            );
-            location.reload(true);
-        });
-    });
-</script>

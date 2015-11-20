@@ -100,3 +100,31 @@ CREATE TABLE advice(
     content_type CHAR(512)
 );
 success!
+timestamp: 2015-11-19T18:08:11.678692
+CREATE TABLE grad(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    student INTEGER REFERENCES auth_user (id) ON DELETE CASCADE  ,
+    university INTEGER REFERENCES university (id) ON DELETE CASCADE  ,
+    blog CHAR(512),
+    yr_quote TEXT,
+    photo CHAR(512),
+    approved CHAR(1)
+);
+success!
+timestamp: 2015-11-19T18:08:37.222587
+CREATE TABLE question(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    author INTEGER REFERENCES auth_user (id) ON DELETE CASCADE  ,
+    university INTEGER REFERENCES university (id) ON DELETE CASCADE  ,
+    title CHAR(512),
+    ques_content TEXT,
+    posted_on TIMESTAMP,
+    keywords TEXT,
+    content_type CHAR(512)
+);
+success!
+timestamp: 2015-11-19T18:20:10.836970
+ALTER TABLE question ADD created_on TIMESTAMP;
+success!
+success!
+success!

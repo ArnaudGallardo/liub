@@ -132,6 +132,20 @@
       });
     </script>
     {{pass}}
+    <script>
+        $(function(){
+            $('#lang').on("click", function() {
+                jQuery.post(
+                    '{{=URL('lang', user_signature=True)}}', // URL for the AJAX call
+                    {
+                      'lang': '{{=session.language}}'
+                    }
+                );
+                location.reload(true);
+            });
+        });
+    </script>
+
     <!-- Share ============================y============ -->
     <script src="{{=URL('static','js/share.js',vars=dict(static=URL('static','images')))}}"></script>
   </body>

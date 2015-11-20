@@ -11,6 +11,7 @@
 
 ## app configuration made easy. Look inside private/appconfig.ini
 from gluon.contrib.appconfig import AppConfig
+from datetime import datetime
 ## once in production, remove reload=True to gain full speed
 myconf = AppConfig(reload=True)
 
@@ -106,7 +107,7 @@ db.define_table('university',
                 Field('info', 'text')
                 )
 
-db.define_table('th_year',
+db.define_table('grad',
                 Field('student', db.auth_user, writable=False, readable=False),
                 Field('university', 'reference university'),
                 Field('blog'),
@@ -114,17 +115,20 @@ db.define_table('th_year',
                 Field('photo'),
                 Field('approved', 'boolean', writable=False, readable=False)
                 )
-db.th_year.approved.default = False
+db.grad.approved.default = False
 
-db.define_table('advice',
+db.define_table('question',
                 Field('author', db.auth_user, writable=False, readable=False),
                 Field('university', 'reference university'),
                 Field('title'),
-                Field('adv_content', 'text'),
-                Field('posted_on','datetime'),
+                Field('ques_content', 'text'),
+                Field('created_on','datetime', writable=False, readable=False),
                 Field('keywords','list:string'),
                 Field('content_type')
                 )
+
+db.question.created_on.default = datetime.utcnow()
+
 # after defining tables, uncomment below to enable auditing
 # auth.enable_record_versioning(db)
 

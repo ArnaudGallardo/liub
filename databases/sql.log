@@ -1,0 +1,102 @@
+timestamp: 2015-11-19T16:30:17.858575
+CREATE TABLE auth_user(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    first_name CHAR(128),
+    last_name CHAR(128),
+    email CHAR(512),
+    password CHAR(512),
+    registration_key CHAR(512),
+    reset_password_key CHAR(512),
+    registration_id CHAR(512)
+);
+success!
+timestamp: 2015-11-19T16:30:17.860705
+CREATE TABLE auth_group(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    role CHAR(512),
+    description TEXT
+);
+success!
+timestamp: 2015-11-19T16:30:17.862737
+CREATE TABLE auth_membership(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE  ,
+    group_id INTEGER REFERENCES auth_group (id) ON DELETE CASCADE  
+);
+success!
+timestamp: 2015-11-19T16:30:17.864425
+CREATE TABLE auth_permission(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    group_id INTEGER REFERENCES auth_group (id) ON DELETE CASCADE  ,
+    name CHAR(512),
+    table_name CHAR(512),
+    record_id INTEGER
+);
+success!
+timestamp: 2015-11-19T16:30:17.866346
+CREATE TABLE auth_event(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    time_stamp TIMESTAMP,
+    client_ip CHAR(512),
+    user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE  ,
+    origin CHAR(512),
+    description TEXT
+);
+success!
+timestamp: 2015-11-19T16:30:17.868583
+CREATE TABLE auth_cas(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER REFERENCES auth_user (id) ON DELETE CASCADE  ,
+    created_on TIMESTAMP,
+    service CHAR(512),
+    ticket CHAR(512),
+    renew CHAR(1)
+);
+success!
+timestamp: 2015-11-19T16:30:17.870210
+CREATE TABLE major(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    student INTEGER REFERENCES auth_user (id) ON DELETE CASCADE  ,
+    maj_value CHAR(512)
+);
+success!
+timestamp: 2015-11-19T16:30:17.872925
+CREATE TABLE promotion(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    student INTEGER REFERENCES auth_user (id) ON DELETE CASCADE  ,
+    prom_value DATE
+);
+success!
+timestamp: 2015-11-19T16:30:17.876091
+CREATE TABLE university(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name CHAR(512),
+    lat DOUBLE,
+    lng DOUBLE,
+    country CHAR(512),
+    info TEXT
+);
+success!
+timestamp: 2015-11-19T16:30:17.878261
+CREATE TABLE th_year(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    student INTEGER REFERENCES auth_user (id) ON DELETE CASCADE  ,
+    university INTEGER REFERENCES university (id) ON DELETE CASCADE  ,
+    blog CHAR(512),
+    yr_quote TEXT,
+    photo CHAR(512),
+    approved CHAR(1)
+);
+success!
+timestamp: 2015-11-19T16:30:17.880217
+CREATE TABLE advice(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    author INTEGER REFERENCES auth_user (id) ON DELETE CASCADE  ,
+    university INTEGER REFERENCES university (id) ON DELETE CASCADE  ,
+    title CHAR(512),
+    adv_content TEXT,
+    posted_on TIMESTAMP,
+    keywords TEXT,
+    content_type CHAR(512)
+);
+success!

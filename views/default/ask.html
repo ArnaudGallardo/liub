@@ -1,2 +1,59 @@
 {{extend 'layout2.html'}}
-{{=form}}
+{{=form.custom.begin}}
+{{=form.custom.widget.title}}
+<div class="input-group" id="head_group" style="width: 50%">
+    <span class="input-group-addon" id="at">@</span>
+    {{=form.custom.widget.university}}
+    <span class="input-group-addon" id="hash">#</span>
+    {{=SELECT_TYPE()}}
+</div>
+<div style="clear: both"></div>
+<div class="notearea">
+    <div id="summernote"></div>
+    <div id="notes">
+        <h1>Titre</h1>
+        <p>test test</p>
+    </div>
+</div>
+<div style="clear: both"></div>
+<div id="my-tag-list" class="tag-list"></div>
+<div style="display: none">
+    {{=form.custom.widget.ques_content}}
+    {{=form.custom.widget.content_type}}
+    <input id="question_university_name" name="university_name" type="text">
+    <ul class="w2p_list" id="question_keywords_grow_input" style="list-style:none;display:none"></ul>
+</div>
+{{=form.custom.submit}}
+{{=form.custom.end}}
+<script>
+    $(function() {
+        // If using Bootstrap 2, be sure to include:
+        // Tags.bootstrapVersion = "2";
+        $('#my-tag-list').tags({
+            suggestions:["basic", "suggestions"],
+            excludeList:["not", "these", "words"],
+            afterAddingTag: function(tag){
+                $("#question_keywords_grow_input").append('<li><input id="question_keywords" name="keywords" type="text" value="'+tag+'"></li>');
+            },
+            afterDeletingTag:function(tag){
+                $('input[value='+tag+']').parent().remove();
+            }
+        });
+
+        $('#summernote').summernote({
+            height: 250,
+            width:'75%',
+            onChange: function(contents, $editable) {
+                $('#question_ques_content').val(contents);
+            }
+        });
+
+        $.get('{{=URL('default','universities',args=['names'], user_signature=True)}}', function(data){
+            $("#question_university").typeahead({ source:data });
+        },'json');
+
+        $( ".selectpicker" ).change(function() {
+            $('#question_content_type').val($('.selectpicker').selectpicker('val'));
+        });
+    });
+</script>

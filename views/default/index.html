@@ -1,58 +1,46 @@
 {{extend 'layout.html'}}
 
 <style type="text/css">
-	.parallaxParent {
-		height: 100vh;
-		overflow: hidden;
+	.panel {
+		height: 100%;
+		width: 100%;
 	}
-	.parallaxParent > * {
-		height: 200%;
-		position: relative;
-		top: -100%;
+	.panel.green {
+		margin-bottom: 400px
 	}
 </style>
-<div class="spacer s0"></div>
-<div id="parallax1" class="parallaxParent">
-	<div style="background-image: url(../../img/example_parallax_bg1.png);"></div>
-</div>
-<div class="spacer s1">
-	<div class="box2 blue">
-		<p>Content 1</p>
-		<a href="#" class="viewsource">view source</a>
-	</div>
-</div>
-<div class="spacer s0"></div>
-<div id="parallax2" class="parallaxParent">
-	<div style="background-image: url(../../img/example_parallax_bg2.png);"></div>
-</div>
-<div class="spacer s1">
-	<div class="box2 blue">
-		<p>Content 2</p>
-		<a href="#" class="viewsource">view source</a>
-	</div>
-</div>
-<div class="spacer s0"></div>
-<div id="parallax3" class="parallaxParent">
-	<div style="background-image: url(../../img/example_parallax_bg3.png);"></div>
-</div>
-<div class="spacer s2"></div>
+<section class="panel blue">
+	<b>ONE</b>
+</section>
+<section class="panel turqoise">
+	<b>TWO</b>
+</section>
+<section class="panel green">
+	<b>THREE</b>
+</section>
+<section class="panel bordeaux">
+	<b>FOUR</b>
+</section>
 <script>
-	// init controller
-	var controller = new ScrollMagic.Controller({globalSceneOptions: {triggerHook: "onEnter", duration: "200%"}});
+	$(function () { // wait for document ready
+		// init
+		var controller = new ScrollMagic.Controller({
+			globalSceneOptions: {
+				triggerHook: 'onLeave'
+			}
+		});
 
-	// build scenes
-	new ScrollMagic.Scene({triggerElement: "#parallax1"})
-					.setTween("#parallax1 > div", {y: "80%", ease: Linear.easeNone})
-					.addIndicators()
-					.addTo(controller);
+		// get all slides
+		var slides = document.querySelectorAll("section.panel");
 
-	new ScrollMagic.Scene({triggerElement: "#parallax2"})
-					.setTween("#parallax2 > div", {y: "80%", ease: Linear.easeNone})
-					.addIndicators()
-					.addTo(controller);
-
-	new ScrollMagic.Scene({triggerElement: "#parallax3"})
-					.setTween("#parallax3 > div", {y: "80%", ease: Linear.easeNone})
-					.addIndicators()
-					.addTo(controller);
+		// create scene for every slide
+		for (var i=0; i<slides.length; i++) {
+			new ScrollMagic.Scene({
+					triggerElement: slides[i]
+				})
+				.setPin(slides[i])
+				.addIndicators() // add indicators (requires plugin)
+				.addTo(controller);
+		}
+	});
 </script>

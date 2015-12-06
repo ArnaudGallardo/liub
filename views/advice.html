@@ -1,0 +1,29 @@
+{{for advice in content:}}
+<a href="{{=URL('default','search',args=['advice',advice.id])}}" class="advice_link">
+    <div class="advice" {{if advice.done:}}id="done"{{pass}}>
+        <div class="type">
+            {{=get_icon(advice.content_type)}}<br>
+            <span id="nb_answer">3</span>
+            <span>comments</span>
+        </div>
+        <div class="extract">
+            <span class="top_line">{{=advice.title}} <span class="univ">@{{=advice.university.name}}</span></span>
+            <span class="content_line">{{=XML(advice.ques_content)}}</span>
+            <div class="bottom_line">
+                <div id="ad_tags_{{=advice.id}}" class="tag-list"></div>
+                <span id="author">By <span>{{=(advice.author.first_name + ' ' + advice.author.last_name)}}</span> on <span>{{=advice.created_on}}</span></span>
+            </div>
+        </div>
+    </div>
+</a>
+{{pass}}
+<script>
+    {{for advice in content:}}
+    $(function() {
+        $('#ad_tags_{{=advice.id}}').tags({
+            readOnly: true,
+            tagData:{{=XML(advice.keywords, sanitize=False)}}
+        });
+    });
+    {{pass}}
+</script>

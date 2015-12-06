@@ -1,4 +1,4 @@
-import math
+import math, os
 # -*- coding: utf-8 -*-
 # this file is released under public domain and you can use without limitations
 
@@ -21,33 +21,19 @@ def index():
     return dict(message=T('Welcome to web2py!'))
 
 
-def convert_pos(lat, long):
-    longitude_shift = 0
-    x_pos = 0
-    y_pos = 0
-    map_width = 1652
-    map_height = 1221
-
-    x = (map_width * (180 + long) / 360) % map_width + longitude_shift
-    lat = lat * math.pi / 180
-    y = math.log(math.tan((lat/2) + (math.pi/4)))
-    y = (map_height / 2) - (map_width * y / (2 * math.pi)) + y_pos
-
-    x -= x_pos - 20
-    y -= y_pos + 72
-
-    print x,':',y
-
 @auth.requires_login()
 def search():
-    convert_pos(35,139.4)
+    style = None
+    content = None
     if request.args(0)=='advice':
+        content = db().select(db.question.ALL)
         print 'advice'
     elif request.args(0)=='user':
         print 'user'
     elif request.args(0)=='university':
+        style = open(os.path.join(request.folder, 'static', 'json', 'style.json'), 'rb').read()
         print 'university'
-    return dict(message=T('Search Page'))
+    return dict(message=T('Search Page'),style=style, content=content)
 
 
 @auth.requires_signature()
@@ -60,11 +46,18 @@ def lang():
     return "ok"
 
 
+#@auth.requires_signature()
 def universities():
-    data = db().select(db.university.ALL)
-    return response.json({'places': data})
+    data = None
+    if request.args(0)=='maps':
+        result = db().select(db.university.id,db.university.lat,db.university.lng,db.university.name,db.university.country,db.university.info)
+        result = {'places' : result}
+    elif request.args(0)=='names':
+        result = db().select(db.university.name,db.university.id)
+    return response.json(result)
 
 
+@auth.requires_login()
 def add_university():
     form = SQLFORM(db.university)
     if form.process().accepted:
@@ -73,11 +66,23 @@ def add_university():
     return dict(form=form)
 
 
+def question_process(form):
+    uni_name = form.vars.university
+    row = db(db.university.name==uni_name).select(db.university.id)
+    if not row:
+        new_uni = db.university.insert(name=form.vars.university)
+        form.vars.university = new_uni
+    else:
+        form.vars.university = row.first()
+
+
+@auth.requires_login()
 def ask():
     form = SQLFORM(db.question)
-    if form.process().accepted:
-        session.flash = T('The data was inserted')
-        redirect(URL('default', 'index'))
+    form.element(_id='question_university')['_placeholder']='University'
+    form.element(_id='question_university')['_data-provide']='typeahead'
+    if form.process(onvalidation=question_process).accepted:
+        print form.vars
     return dict(form=form)
 
 

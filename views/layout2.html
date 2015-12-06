@@ -25,6 +25,8 @@
     <link rel="stylesheet" href="{{=URL('static','css/bootstrap-theme.min.css')}}"/>
     <link rel="stylesheet" href="{{=URL('static','css/web2py-bootstrap3.css')}}"/>
     <link rel="stylesheet" href="{{=URL('static','stylesheets/myapp.css')}}"/>
+    <link rel="stylesheet" type="text/css" href="{{=URL('static','css/bootstrap-tags.css')}}"/>
+    <link rel="stylesheet" type="text/css" href="{{=URL('static','css/bootstrap-select.min.css')}}"/>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
     <link rel="shortcut icon" href="{{=URL('static','images/favicon.ico')}}" type="image/x-icon">
     <link rel="apple-touch-icon" href="{{=URL('static','images/favicon.png')}}">
@@ -36,10 +38,13 @@
         <![endif]-->
     <!-- Favicons -->
     {{include 'web2py_ajax.html'}} <!-- this includes jquery.js, calendar.js/.css and web2py.js -->
-    <!--<script src="{{=URL('static','js/craftmap.js')}}"></script>
-    <script src="{{=URL('static','js/init.js')}}"></script> -->
     <script src="//maps.googleapis.com/maps/api/js?sensor=false&language={{=session.language}}"></script>
-    <script src="{{=URL('static','js/jquery.travelmap.min.js')}}"></script>
+    <script src="{{=URL('static','js/jquery.travelmap.js')}}"></script>
+      <script src='http://cdn.ractivejs.org/latest/ractive.js'></script>
+      <script src='{{=URL('static','js/bootstrap-tags.js')}}'></script>
+    <script src='{{=URL('static','js/bootstrap-select.min.js')}}'></script>
+      <script src='{{=URL('static','js/summernote.js')}}'></script>
+    <link rel="stylesheet" type="text/css" href="{{=URL('static','css/summernote.css')}}"/>
     {{
     # using sidebars need to know what sidebar you want to use
     mc0 = 'col-md-12'
@@ -122,6 +127,11 @@
     <!-- The javascript =============================== -->
     <script src="{{=URL('static','js/bootstrap.min.js')}}"></script>
     <script src="{{=URL('static','js/web2py-bootstrap3.js')}}"></script>
+    <script src="{{=URL('static','js/bootstrap-typeahead.js')}}"></script>
+    <script src='http://cdn.ractivejs.org/latest/ractive.js'></script>
+    <script src="{{=URL('static', 'js/ractive-transitions-slide.min.js')}}"></script>
+    <script src="{{=URL('static', 'js/ractive-transitions-fade.min.js')}}"></script>
+    <script src="{{=URL('static', 'js/ractive-events-typing.js')}}"></script>
     {{block page_js}}{{end page_js}}
     {{if response.google_analytics_id:}}
     <!-- Analytics ==================================== -->
@@ -145,8 +155,5 @@
             });
         });
     </script>
-
-    <!-- Share ============================y============ -->
-    <script src="{{=URL('static','js/share.js',vars=dict(static=URL('static','images')))}}"></script>
   </body>
 </html>

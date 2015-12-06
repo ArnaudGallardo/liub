@@ -1,24 +1,94 @@
-<div id="map_canvas"></div>
+<div id='target'></div>
+<script id="template" type="text/ractive">
+    <div id="map"></div>
+    <p>{% univ_dict %}</p>
+</script>
 {{print session.language}}
 <script>
-    $('#map_canvas').travelmap({
-     center: [0, 0], // lat, lng
-     data: '{{=URL('default','universities')}}',
-     width: '100%',
-     height: 500,
-     zoom: 1,
-     markAnimation: null,
-     mapTypeId: 'ROADMAP',
-     mapTypeControl: false,
-     mapTypeControlOptions: 'DEFAULT',
-     zoomControl: false,
-     zoomControlOptions: 'DEFAULT',
-     panControl: false,
-     scaleControl: false,
-     overviewMapControl: false,
-     streetViewControl: false,
-     geoLocCheck: false,
-     geoLocMessage: 'You are here',
-     theme: 'bright-and-bubbly'
+
+    // Ractive object
+    var MAIN = new Ractive({
+        el: '#target',
+        template: '#template',
+        delimiters: ['{%', '%}'],
+        tripleDelimiters: ['{%%', '%%}'],
+        data: {
+            univ_dict: {'places':[]},
+            markers_list: [],
+            boxes_list: [],
+            ids_list: []
+        }
     });
+    var map = $('#map').travelmap({
+        data : MAIN.get('univ_dict'),
+        width: '100%',
+        theme: {{=XML(style)}}
+    });
+    refresh();
+
+    //Allow the user to get the list of posts without the new posts created by him (because also stored locally)
+    function refresh() {
+        // Loads the list of universities.
+        $.ajax("{{=URL('default','universities',args=['maps'], user_signature=True)}}",
+              {
+                method: 'POST',
+                success: function (data) {
+                    //NE s'ajoute pas...
+                    //Prevoir modification des datas
+                    refresh_markers(data);
+                }
+              }
+        );
+      };
+
+    function refresh_markers(universities) {
+        // global variables
+        var locations = [],
+        markers = MAIN.get('markers_list'),
+        ids = MAIN.get('ids_list'),
+        boxes = MAIN.get('boxes_list');
+
+        var tmp_list = MAIN.get('ids_list').slice();
+        universities.places.forEach(function(p, i) {
+            //ids.forEach(function(p, i) {console.log(p);});
+            if (ids.indexOf(p.id) != -1) {
+                tmp_list.splice(tmp_list.indexOf(p.id), 1);
+            }
+            else {
+                locations.push(new google.maps.LatLng(p.lat, p.lng));
+
+                // infoboxes options
+                var content = '<div class="content_' + p.id + '"><div id="siteNotice"></div>' + '<h2 id="firstHeading" class="firstHeading">' + p.name + ', ' + p.country + '</h2>' + '<div id="bodyContent"><p>' + p.info + '</p></div></div>';
+                var box = new google.maps.InfoWindow({
+                    content: content
+                });
+                boxes.push(box);
+                var marker = new google.maps.Marker({
+                    animation: google.maps.Animation.DROP,
+                    title: p.name + ', ' + p.country,
+                    map: map,
+                    position: locations[locations.length-1]
+                });
+                markers.push(marker);
+
+                google.maps.event.addListener(marker, 'click', function() {
+                    box.open(map, marker);
+                });
+                ids.push(p.id);
+            }
+        });
+        tmp_list.forEach(function(p, i) {
+            var id = ids.indexOf(p);
+            markers[id].setMap(null);
+        });
+
+        MAIN.set('markers_list',markers);
+        MAIN.set('boxes_list',boxes);
+        MAIN.set('ids_list',ids);
+
+    }
+
+
+
+    setInterval(refresh, 10000);
 </script>

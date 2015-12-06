@@ -33,11 +33,12 @@
   padding: 15px;
 }
 
-.btn-default:hover, .btn-default.active.focus, .btn-default.active:focus,
-.btn-default.active:hover, .btn-default:active.focus,
-.btn-default:active:focus, .btn-default:active:hover,
-.open>.dropdown-toggle.btn-default.focus,
-.open>.dropdown-toggle.btn-default:focus, .open>.dropdown-toggle.btn-default:hover {
+.navbar-inverse .btn-default:hover, .navbar-inverse .btn-default.active.focus,
+.navbar-inverse .btn-default.active:focus,
+.navbar-inverse .btn-default.active:hover, .navbar-inverse .btn-default:active.focus,
+.navbar-inverse .btn-default:active:focus, .navbar-inverse .btn-default:active:hover,
+.navbar-inverse .open>.dropdown-toggle.btn-default.focus,
+.navbar-inverse .open>.dropdown-toggle.btn-default:focus, .navbar-inverse .open>.dropdown-toggle.btn-default:hover {
   color: #009EE0;
   background-image: none;
   border: 0;
@@ -95,4 +96,98 @@
 
 .dropdown-header {
   text-align: center;
+}
+
+.advice#done {
+  border-left: 5px solid lime;
+}
+
+.advice:hover {
+
+}
+
+.advice {
+  font-family: $ftLora;
+  display: inline-block;
+  width: 70%;
+  margin-left: 15%;
+  background-color: #EEE;
+  margin-bottom: 6px;
+  margin-top: 6px;
+  color: $clrBdxBrown;
+
+  .type {
+    width: 15%;
+    float: left;
+
+    i {
+      font-size: 40px;
+      width: 40px;
+      display: block;
+      margin: 20px auto 0;
+      text-align: center;
+    }
+
+    span:not(#nb_answer) {
+      font-size: 12px;
+      display: block;
+      width: 100%;
+      text-align: center;
+    }
+    #nb_answer {
+      font-size: 20px;
+      display: block;
+      width: 30px;
+      height: 30px;
+      text-align: center;
+      margin: 5px auto 0;
+      background-color: $clrBdxBrown;
+      color: white;
+      @include border-radius(15px);
+    }
+  }
+
+  .extract {
+    width: 85%;
+    float: left;
+    padding-bottom: 10px;
+    padding-right: 10px;
+
+    margin-top: 5px;
+
+    .top_line {
+      line-height: 30px;
+      font-size: 22px;
+      vertical-align: middle;
+      font-family: $ftMontserrat;
+      .univ {
+        display: inline-block;
+        background-color: rgba($clrBdxBlue,.5);
+        padding: 0 10px;
+        font-size: 11px;
+        @include border-radius(12px);
+      }
+    }
+    .content_line {
+      display: block;
+      margin-left: 20px;
+      margin-bottom: 10px;
+      margin-top: 5px;
+      line-height: 12px;
+      height: 60px;
+      overflow: hidden;
+    }
+    .bottom_line {
+      bottom: 0;
+      position: relative;
+      font-size: 12px;
+      #author {
+        float: right;
+        line-height: 25px;
+      }
+      .tag-list {
+        font-family: $ftMontserrat;
+      }
+    }
+  }
 }

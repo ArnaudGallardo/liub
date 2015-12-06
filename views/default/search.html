@@ -1,6 +1,8 @@
 {{extend 'layout2.html'}}
 {{if request.args(0)=='university':}}
 {{include 'university.html'}}
+{{elif request.args(0)=='advice':}}
+{{include 'advice.html'}}
 {{else:}}
 <div class="lookfor">
     <h1>{{=T('Looking for')}}:</h1>

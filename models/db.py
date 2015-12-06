@@ -88,6 +88,9 @@ auth.settings.reset_password_requires_verification = True
 ## >>> rows=db(db.mytable.myfield=='value').select(db.mytable.ALL)
 ## >>> for row in rows: print row.id, row.myfield
 #########################################################################
+def widget(**kwargs):
+    return lambda field, value, kwargs=kwargs: SQLFORM.widgets[field.type].widget(field, value, **kwargs)
+
 
 db.define_table('major',
                 Field('student', db.auth_user, writable=False, readable=False),
@@ -104,8 +107,10 @@ db.define_table('university',
                 Field('lat', 'double'),
                 Field('lng', 'double'),
                 Field('country'),
-                Field('info', 'text')
+                Field('info', 'text'),
+                Field('created_on','datetime')
                 )
+db.university.created_on.default = datetime.utcnow()
 
 db.define_table('grad',
                 Field('student', db.auth_user, writable=False, readable=False),
@@ -120,14 +125,18 @@ db.grad.approved.default = False
 db.define_table('question',
                 Field('author', db.auth_user, writable=False, readable=False),
                 Field('university', 'reference university'),
-                Field('title'),
+                Field('title', widget=widget(_placeholder='Titre', _style='width:75%')),
                 Field('ques_content', 'text'),
                 Field('created_on','datetime', writable=False, readable=False),
                 Field('keywords','list:string'),
-                Field('content_type')
+                Field('content_type', widget=widget(_placeholder='Type')),
+                Field('done', 'boolean'),
                 )
 
+db.question.author.default = auth.user_id
 db.question.created_on.default = datetime.utcnow()
+db.question.done.default = False
+
 
 # after defining tables, uncomment below to enable auditing
 # auth.enable_record_versioning(db)

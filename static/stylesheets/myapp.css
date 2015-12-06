@@ -1,5 +1,4 @@
 @import url(https://fonts.googleapis.com/css?family=Lora:400,700,400italic|Montserrat:400,700);
-@import url(https://fonts.googleapis.com/css?family=Lora:400,700,400italic|Montserrat:400,700);
 /* line 1, ../sass/_main.scss */
 .navbar-inverse {
   background-image: none;
@@ -43,11 +42,12 @@
 }
 
 /* line 36, ../sass/_main.scss */
-.btn-default:hover, .btn-default.active.focus, .btn-default.active:focus,
-.btn-default.active:hover, .btn-default:active.focus,
-.btn-default:active:focus, .btn-default:active:hover,
-.open > .dropdown-toggle.btn-default.focus,
-.open > .dropdown-toggle.btn-default:focus, .open > .dropdown-toggle.btn-default:hover {
+.navbar-inverse .btn-default:hover, .navbar-inverse .btn-default.active.focus,
+.navbar-inverse .btn-default.active:focus,
+.navbar-inverse .btn-default.active:hover, .navbar-inverse .btn-default:active.focus,
+.navbar-inverse .btn-default:active:focus, .navbar-inverse .btn-default:active:hover,
+.navbar-inverse .open > .dropdown-toggle.btn-default.focus,
+.navbar-inverse .open > .dropdown-toggle.btn-default:focus, .navbar-inverse .open > .dropdown-toggle.btn-default:hover {
   color: #009EE0;
   background-image: none;
   border: 0;
@@ -62,25 +62,25 @@
   outline: none;
 }
 
-/* line 53, ../sass/_main.scss */
+/* line 54, ../sass/_main.scss */
 .web2py-menu-active {
   border-bottom: 5px solid #009EE0;
   margin-bottom: -5px;
 }
 
-/* line 58, ../sass/_main.scss */
+/* line 59, ../sass/_main.scss */
 .lookfor {
   width: 96%;
   position: relative;
 }
-/* line 62, ../sass/_main.scss */
+/* line 63, ../sass/_main.scss */
 .lookfor h1 {
   text-align: center;
   margin-bottom: 20px;
   font-family: "Lora", serif;
   color: #443A31;
 }
-/* line 69, ../sass/_main.scss */
+/* line 70, ../sass/_main.scss */
 .lookfor .searchitem {
   color: #443A31;
   font-size: 30vh;
@@ -91,160 +91,156 @@
   text-align: center;
   cursor: pointer;
 }
-/* line 78, ../sass/_main.scss */
+/* line 79, ../sass/_main.scss */
 .lookfor .searchitem p {
   font-size: 22px;
   font-family: "Lora", serif;
   text-transform: uppercase;
 }
-/* line 85, ../sass/_main.scss */
+/* line 86, ../sass/_main.scss */
 .lookfor .searchitem:hover {
   text-decoration: none;
   color: #009EE0;
 }
-/* line 90, ../sass/_main.scss */
+/* line 91, ../sass/_main.scss */
 .lookfor #university {
   border-left: 3px solid #443A31;
   border-right: 3px solid #443A31;
 }
 
-/* line 96, ../sass/_main.scss */
+/* line 97, ../sass/_main.scss */
 .dropdown-header {
   text-align: center;
 }
 
-/* line 3, ../sass/craftmap.scss */
-#content {
-  margin: 20px auto 0;
-  width: 1000px;
+/* line 101, ../sass/_main.scss */
+.advice#done {
+  border-left: 5px solid lime;
 }
 
-/* line 8, ../sass/craftmap.scss */
-.demo1 {
+/* line 109, ../sass/_main.scss */
+.advice {
+  font-family: "Lora", serif;
+  display: inline-block;
+  width: 70%;
+  margin-left: 15%;
+  background-color: #EEE;
+  margin-bottom: 6px;
+  margin-top: 6px;
+  color: #443A31;
+}
+/* line 119, ../sass/_main.scss */
+.advice .type {
+  width: 15%;
   float: left;
-  width: 1000px;
-  height: 600px;
-  -moz-box-shadow: 0 0 5px #ddd;
-  -webkit-box-shadow: 0 0 5px #ddd;
-  box-shadow: 0 0 5px #ddd;
 }
-
-/* line 18, ../sass/craftmap.scss */
-.menu {
-  margin-bottom: 0px;
+/* line 123, ../sass/_main.scss */
+.advice .type i {
+  font-size: 40px;
+  width: 40px;
+  display: block;
+  margin: 20px auto 0;
   text-align: center;
 }
-
-/* line 23, ../sass/craftmap.scss */
-.menu a {
-  color: #D7363A;
-  font-size: 11px;
-  font-weight: bold;
-  margin: 0 10px;
-}
-
-/* line 30, ../sass/craftmap.scss */
-.preloader {
-  background: url(../images/loader.gif) no-repeat center #fff;
-}
-
-/* line 34, ../sass/craftmap.scss */
-.marker {
+/* line 131, ../sass/_main.scss */
+.advice .type span:not(#nb_answer) {
+  font-size: 12px;
   display: block;
-  text-indent: -9999px;
-  width: 40px;
-  height: 40px;
-  outline: none;
-  background: url(../images/markers/pin1_blue.png) no-repeat;
-  background-size: contain;
-  cursor: pointer;
+  width: 100%;
+  text-align: center;
 }
-
-/* line 45, ../sass/craftmap.scss */
-.popup {
-  width: 300px;
-  position: absolute;
-  padding: 8px;
-  background: #2a2a2a;
-  color: #fff;
-  font-weight: bold;
+/* line 137, ../sass/_main.scss */
+.advice .type #nb_answer {
+  font-size: 20px;
+  display: block;
+  width: 30px;
+  height: 30px;
+  text-align: center;
+  margin: 5px auto 0;
+  background-color: #443A31;
+  color: white;
+  -moz-border-radius: 15px;
+  -webkit-border-radius: 15px;
+  border-radius: 15px;
+}
+/* line 150, ../sass/_main.scss */
+.advice .extract {
+  width: 85%;
+  float: left;
+  padding-bottom: 10px;
+  padding-right: 10px;
+  margin-top: 5px;
+}
+/* line 158, ../sass/_main.scss */
+.advice .extract .top_line {
+  line-height: 30px;
+  font-size: 22px;
+  vertical-align: middle;
+  font-family: "Montserrat", sans-serif;
+}
+/* line 163, ../sass/_main.scss */
+.advice .extract .top_line .univ {
+  display: inline-block;
+  background-color: rgba(0, 158, 224, 0.5);
+  padding: 0 10px;
   font-size: 11px;
-  line-height: 20px;
+  -moz-border-radius: 12px;
+  -webkit-border-radius: 12px;
+  border-radius: 12px;
+}
+/* line 171, ../sass/_main.scss */
+.advice .extract .content_line {
+  display: block;
+  margin-left: 20px;
+  margin-bottom: 10px;
+  margin-top: 5px;
+  line-height: 12px;
+  height: 60px;
+  overflow: hidden;
+}
+/* line 180, ../sass/_main.scss */
+.advice .extract .bottom_line {
+  bottom: 0;
+  position: relative;
+  font-size: 12px;
+}
+/* line 184, ../sass/_main.scss */
+.advice .extract .bottom_line #author {
+  float: right;
+  line-height: 25px;
+}
+/* line 188, ../sass/_main.scss */
+.advice .extract .bottom_line .tag-list {
+  font-family: "Montserrat", sans-serif;
 }
 
-/* line 56, ../sass/craftmap.scss */
-.popup h3 {
-  color: #52acf1;
-  margin: 0;
+/* line 1, ../sass/_ask.scss */
+#head_group {
   margin-bottom: 10px;
-  font-family: "Lora", serif;
-  font-weight: normal;
+}
+
+/* line 5, ../sass/_ask.scss */
+#notes {
+  width: 23%;
+  height: 300px;
+  background-color: rgba(255, 215, 48, 0.46);
+  margin-left: 1%;
+  -moz-border-radius: 20px;
+  -webkit-border-radius: 20px;
+  border-radius: 20px;
+  font-family: "Montserrat", sans-serif;
+  padding: 15px;
+}
+/* line 13, ../sass/_ask.scss */
+#notes h1 {
   font-size: 20px;
 }
-
-/* line 65, ../sass/craftmap.scss */
-.popup a {
-  color: white;
+/* line 16, ../sass/_ask.scss */
+#notes p {
+  color: #AAA;
 }
 
-/* line 69, ../sass/craftmap.scss */
-.popup a:hover {
-  color: #52acf1;
-  text-decoration: none;
-}
-
-/* line 74, ../sass/craftmap.scss */
-.popup .close {
-  display: block;
-  text-indent: -9999px;
-  position: absolute;
-  top: 4px;
-  right: 4px;
-  width: 16px;
-  height: 16px;
-  outline: none;
-  background: url(../images/close.jpg) no-repeat;
-  cursor: pointer;
-  opacity: 1;
-}
-
-/* line 88, ../sass/craftmap.scss */
-.relative {
-  position: relative;
-}
-
-/* line 92, ../sass/craftmap.scss */
-.controls {
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  z-index: 20;
-}
-
-/* line 99, ../sass/craftmap.scss */
-.controls a {
-  background: #2a2a2a;
-  background: rgba(0, 0, 0, 0.6);
-  display: block;
+/* line 21, ../sass/_ask.scss */
+.notearea > div {
   float: left;
-  clear: both;
-  font-size: 11px;
-  font-weight: bold;
-  line-height: 25px;
-  margin-bottom: 2px;
-  outline: none;
-  padding: 0 15px;
-  text-decoration: none;
-}
-
-/* line 114, ../sass/craftmap.scss */
-.controls a:hover {
-  background: #eee;
-  color: #2a2a2a;
-}
-
-/* line 119, ../sass/craftmap.scss */
-.controls .active {
-  background: #52acf1;
-  color: #fff;
 }

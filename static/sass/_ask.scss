@@ -1,0 +1,23 @@
+#head_group {
+  margin-bottom: 10px;
+}
+
+#notes {
+  width: 23%;
+  height: 300px;
+  background-color: rgba(255, 215, 48, 0.46);
+  margin-left: 1%;
+  @include border-radius(20px);
+  font-family: $ftMontserrat;
+  padding: 15px;
+  h1 {
+    font-size: 20px;
+  }
+  p {
+    color: #AAA;
+  }
+}
+
+.notearea>div {
+  float: left;
+}

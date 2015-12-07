@@ -1,4 +1,5 @@
 import math, os
+
 # -*- coding: utf-8 -*-
 # this file is released under public domain and you can use without limitations
 
@@ -84,6 +85,11 @@ def ask():
     if form.process(onvalidation=question_process).accepted:
         print form.vars
     return dict(form=form)
+
+@auth.requires_membership('admin')
+def admin():
+    csv_to_dict()
+    return 'lol'
 
 
 def user():

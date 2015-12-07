@@ -22,11 +22,14 @@ response.google_analytics_id = None
 #########################################################################
 ## this is the main application menu add/remove items as required
 #########################################################################
-
-response.menu = [
-    (T('Search'), (request.function=='search'), URL('default', 'search'), []),
-    (T('Ask Question'), (request.function=='ask'), URL('default', 'ask'), []),
-]
+print request.function
+if request.function == 'admin':
+    response.menu = []
+else:
+    response.menu = [
+        (T('Search'), (request.function=='search'), URL('default', 'search'), []),
+        (T('Ask Question'), (request.function=='ask'), URL('default', 'ask'), []),
+    ]
 
 DEVELOPMENT_MENU = False
 
@@ -42,15 +45,19 @@ def user_bar():
         text_head = T('Logged as') + ' ' + auth.user.first_name + ' ' + auth.user.last_name
         text_logout = I(_class='fa fa-sign-out') + ' ' + T('logout')
         text_profile = I(_class='fa fa-user') + ' ' + T('profile')
+        text_admin = I(_class='fa fa-gears') + ' ' + T('administration page')
         text_language = I(_class='fa fa-language') + ' ' + T('changer pour') + ' ' + get_lang_switch(session.language)
         head = LI(text_head,_class='dropdown-header')
         lang = A(text_language, _href='#', _id='lang')
         logout = A(text_logout, _href=action+'/logout')
+        admin = ''
+        if (auth.has_membership(3,auth.user_id)):
+            admin = A(text_admin,_href=URL('default','admin'))
         profile = A(text_profile, _href=action+'/profile')
         button = BUTTON(I(_class='fa fa-cog'),_class='btn btn-default dropdown-toggle', _type='button',_id='profileMenu'
                         , **{'_data-toggle': 'dropdown'
                                 ,'_aria-haspopup': 'true', '_aria-expanded': 'false'})
-        ul = UL(head,lang,profile,logout,_class='dropdown-menu')
+        ul = UL(head,lang,profile,logout,admin,_class='dropdown-menu')
         bar = DIV(button,ul,_class='dropdown')
 
     return bar

@@ -1,46 +1,102 @@
 {{extend 'layout.html'}}
 
-<style type="text/css">
-	.panel {
-		height: 100%;
-		width: 100%;
-	}
-	.panel.green {
-		margin-bottom: 400px
-	}
-</style>
-<section class="panel blue">
-	<b>ONE</b>
-</section>
-<section class="panel turqoise">
-	<b>TWO</b>
-</section>
-<section class="panel green">
-	<b>THREE</b>
-</section>
-<section class="panel bordeaux">
-	<b>FOUR</b>
-</section>
+    <nav class="fixed">
+      <div class="midnightHeader default">
+          <div style="padding-top: 50px">
+            <a class="logo"><img src="{{=URL('static','images/logo.png')}}" width="200px" id="logoanim"></a>
+          </div>
+      </div>
+      <div class="midnightHeader white">
+          <div style="padding-top: 50px">
+            <div class="bot_triangle"></div>
+            <div class="top_triangle"></div>
+            <a class="logo"><img src="{{=URL('static','images/logo.png')}}" width="200px" id="logoanim"></a>
+          </div>
+      </div>
+      <div class="midnightHeader hidden">
+          <div style="padding-top: 50px">
+          </div>
+      </div>
+    </nav>
+
+<div>
+    <section class="window" data-midnight="hidden">
+        <div>
+            <img src="{{=URL('static','images/globe2.svg')}}" width="600px" class="right_img" id="globe"/>
+            <img src="{{=URL('static','images/logo.png')}}" width="600px" id="logo_lg"/>
+        </div>
+    </section>
+    <section class="window" data-midnight="white">2</section>
+    <section class="window" data-midnight="blue">3</section>
+    <section class="window">4</section>
+</div>
 <script>
-	$(function () { // wait for document ready
-		// init
-		var controller = new ScrollMagic.Controller({
-			globalSceneOptions: {
-				triggerHook: 'onLeave'
-			}
-		});
+    var logo_lg_width = 0;
+    var logo_lg_top = 0;
+    var changed_lg_size = false;
+    $(document).ready(function(){
 
-		// get all slides
-		var slides = document.querySelectorAll("section.panel");
+        $('.window').windows({
+            snapping: true,
+            snapSpeed: 500,
+            snapInterval: 1100,
+            onScroll: function(scrollPos){
+                // scrollPos:Number
+            },
+            onSnapComplete: function($el){
+                // after window ($el) snaps into place
+            },
+            onWindowEnter: function($el){
+                // when new window ($el) enters viewport
+            }
+        });
+        $('nav.fixed').midnight();
+        $('#globe').css("width",$(".window").height());
+        $('#globe').css("margin-right",-($(".window").height()/3));
+        logo_lg_width = $(".window").width() - (2*($(".window").height()/3));
+        $('#logo_lg').css("width",logo_lg_width);
+        logo_lg_top = ($(".window").height()/2)-($('#logo_lg').height()/2);
+        $('#logo_lg').css("top",logo_lg_top);
+    });
 
-		// create scene for every slide
-		for (var i=0; i<slides.length; i++) {
-			new ScrollMagic.Scene({
-					triggerElement: slides[i]
-				})
-				.setPin(slides[i])
-				.addIndicators() // add indicators (requires plugin)
-				.addTo(controller);
-		}
-	});
+    $(window).scroll(function() {
+        if ($(this).scrollTop() > 50 && !changed_lg_size) {
+            // apply effects
+            changed_lg_size = true;
+            console.log($(this).scrollTop());
+            /*var v = $(".window").height() - $(this).scrollTop();
+            var new_lg = (logo_lg_width * v) / $(".window").height();
+            $('#logo_lg').css("width",new_lg);*/
+            $( "#logo_lg" ).animate({
+                width: 200,
+                margin: "50 0 0 50",
+                top: 0
+              }, 800, function() {
+                // Animation complete.
+            });
+        }
+        if ($(this).scrollTop() < 50 && changed_lg_size) {
+            // apply effects
+                changed_lg_size = false;
+            console.log($(this).scrollTop());
+            /*var v = $(".window").height() - $(this).scrollTop();
+            var new_lg = (logo_lg_width * v) / $(".window").height();
+            $('#logo_lg').css("width",new_lg);*/
+            $( "#logo_lg" ).animate({
+                width: logo_lg_width,
+                margin: "0 0 0 0",
+                top: logo_lg_top
+              }, 800, function() {
+                // Animation complete.
+            });
+        }
+        if ($(this).scrollTop() > ($(".window").height()/2)-$('#logo_lg').height() && $(this).scrollTop() < $(".window").height()) {
+            // apply effects
+            console.log('MIDDLE');
+        }
+        if($(this).scrollTop() > $(".window").height()) {
+        // apply effects
+            console.log('AFTER SECTION 1');
+        }
+    });
 </script>

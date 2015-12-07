@@ -244,3 +244,111 @@
 .notearea > div {
   float: left;
 }
+
+/* line 2, ../sass/_index.scss */
+.window {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  overflow: hidden;
+}
+
+/* line 10, ../sass/_index.scss */
+.window:nth-child(1) {
+  background: #ffffff;
+  top: 0%;
+}
+
+/* line 10, ../sass/_index.scss */
+.window:nth-child(2) {
+  background: #009EE0;
+  top: 100%;
+}
+
+/* line 10, ../sass/_index.scss */
+.window:nth-child(3) {
+  background: #BCCF3D;
+  top: 200%;
+}
+
+/* line 10, ../sass/_index.scss */
+.window:nth-child(4) {
+  background: #FFC300;
+  top: 300%;
+}
+
+/* line 10, ../sass/_index.scss */
+.window:nth-child(5) {
+  background: #E8A0B8;
+  top: 400%;
+}
+
+/* line 16, ../sass/_index.scss */
+.midnightHeader.default {
+  background: none;
+  color: black;
+}
+
+/* line 20, ../sass/_index.scss */
+.midnightHeader.hidden {
+  display: none;
+}
+
+/* line 23, ../sass/_index.scss */
+.midnightHeader.white {
+  color: black;
+}
+/* line 25, ../sass/_index.scss */
+.midnightHeader.white img {
+  background-color: rgba(255, 255, 255, 0.8);
+  float: left;
+  position: relative;
+}
+/* line 30, ../sass/_index.scss */
+.midnightHeader.white .bot_triangle {
+  z-index: 999;
+  bottom: 0;
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 30px 0 0 30px;
+  border-color: transparent transparent transparent #009EE0;
+}
+/* line 40, ../sass/_index.scss */
+.midnightHeader.white .top_triangle {
+  z-index: 999;
+  top: 50px;
+  left: 170px;
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 0 30px 30px 0;
+  border-color: transparent #009EE0 transparent transparent;
+}
+
+/* line 52, ../sass/_index.scss */
+.midnightHeader.blue {
+  color: white;
+}
+
+/* line 56, ../sass/_index.scss */
+.fixed {
+  position: fixed;
+  font-size: 30px;
+  margin-left: 50px;
+  padding-top: 50px;
+  z-index: 9999;
+}
+
+/* line 64, ../sass/_index.scss */
+.right_img {
+  float: right;
+}
+
+/* line 68, ../sass/_index.scss */
+#logo_lg {
+  position: fixed;
+  float: left;
+}

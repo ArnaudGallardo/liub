@@ -38,12 +38,15 @@
         <![endif]-->
     <!-- Favicons -->
     {{include 'web2py_ajax.html'}} <!-- this includes jquery.js, calendar.js/.css and web2py.js -->
-    <script src="//maps.googleapis.com/maps/api/js?sensor=false&language={{=session.language}}"></script>
-    <script src="{{=URL('static','js/jquery.travelmap.js')}}"></script>
+    <script src="//maps.googleapis.com/maps/api/js?language={{=session.language}}"></script>
       <script src='http://cdn.ractivejs.org/latest/ractive.js'></script>
-      <script src='{{=URL('static','js/bootstrap-tags.js')}}'></script>
+    <script src="{{=URL('static','js/jquery.travelmap.js')}}"></script>
+    <script src='{{=URL('static','js/bootstrap-tags.js')}}'></script>
     <script src='{{=URL('static','js/bootstrap-select.min.js')}}'></script>
-      <script src='{{=URL('static','js/summernote.js')}}'></script>
+    <script src='{{=URL('static','js/summernote.js')}}'></script>
+    {{if request.function == 'admin':}}
+    <script src='{{=URL('static','js/Chart.js')}}'></script>
+    {{pass}}
     <link rel="stylesheet" type="text/css" href="{{=URL('static','css/summernote.css')}}"/>
     {{
     # using sidebars need to know what sidebar you want to use
@@ -128,7 +131,6 @@
     <script src="{{=URL('static','js/bootstrap.min.js')}}"></script>
     <script src="{{=URL('static','js/web2py-bootstrap3.js')}}"></script>
     <script src="{{=URL('static','js/bootstrap-typeahead.js')}}"></script>
-    <script src='http://cdn.ractivejs.org/latest/ractive.js'></script>
     <script src="{{=URL('static', 'js/ractive-transitions-slide.min.js')}}"></script>
     <script src="{{=URL('static', 'js/ractive-transitions-fade.min.js')}}"></script>
     <script src="{{=URL('static', 'js/ractive-events-typing.js')}}"></script>

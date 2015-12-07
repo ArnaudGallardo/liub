@@ -1,4 +1,5 @@
-import math, os
+import math, os, json
+from gluon.contrib.populate import populate
 
 # -*- coding: utf-8 -*-
 # this file is released under public domain and you can use without limitations
@@ -46,6 +47,44 @@ def lang():
         session.language = 'fr'
     return "ok"
 
+def test_data():
+    result = {}
+    #First I grab the questions data
+    year = json.loads(request.vars.year)
+    count = db.question.id.count()
+    questions = db(db.question.created_on.year() == year).select(db.question.created_on.month(), count, groupby=db.question.created_on.month())
+    questions_label = db().select(db.question.created_on.year(), groupby=db.question.created_on.year())
+    print questions
+    print questions_label
+    label = []
+    for row in questions_label:
+        label.append({'id':row['_extra']["web2py_extract('year',question.created_on)"],
+                      'name':row['_extra']["web2py_extract('year',question.created_on)"]})
+    result['questions_label'] = label
+    data = [0,0,0,0,0,0,0,0,0,0,0,0]
+    for row in questions:
+        data[row['_extra']["web2py_extract('month',question.created_on)"]-1] = row[count]
+    result['questions'] = data
+    #Now I grab the students data
+    count = db.auth_user.id.count()
+    promos = db().select(db.auth_user.promotion, count, groupby=db.auth_user.promotion)
+    result['students_label'] = []
+    result['students_data'] = []
+    for row in promos:
+        result['students_label'].append(row.auth_user.promotion)
+        result['students_data'].append(row[count])
+    print promos
+    #Now I grab the universities data
+    result['universities'] = [70,30]
+    #Now I grab the grads student profiles data
+    result['grads'] = [50,50]
+    return response.json(result)
+
+def test_populate():
+    populate(db.question,200)
+    db.commit()
+
+    return 'Done'
 
 #@auth.requires_signature()
 def universities():
@@ -89,7 +128,7 @@ def ask():
 @auth.requires_membership('admin')
 def admin():
     csv_to_dict()
-    return 'lol'
+    return dict(message=T('Welcome to admin page!'))
 
 
 def user():

@@ -352,3 +352,8 @@
   position: fixed;
   float: left;
 }
+
+/* line 73, ../sass/_index.scss */
+.badge {
+  background-color: #ff754e;
+}

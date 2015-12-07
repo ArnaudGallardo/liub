@@ -22,9 +22,11 @@ response.google_analytics_id = None
 #########################################################################
 ## this is the main application menu add/remove items as required
 #########################################################################
-print request.function
 if request.function == 'admin':
-    response.menu = []
+    response.menu = [
+        (XML(T('New ')+I(_class='fa fa-university')+' '+str(SPAN('100',_class='badge')), sanitize=False), (request.function=='search'), URL('default', 'search'), []),
+        (XML(T('Complete profiles ')+str(SPAN('100',_class='badge')), sanitize=False), (request.function=='ask'), URL('default', 'ask'), []),
+    ]
 else:
     response.menu = [
         (T('Search'), (request.function=='search'), URL('default', 'search'), []),

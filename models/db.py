@@ -69,7 +69,7 @@ db.define_table(
     Field('password', 'password', length=512,            # required
           readable=False, label='Password'),
     Field('promotion','integer'),
-    Field('major','text'),
+    Field('major'),
     Field('registration_key', length=512,                # required
           writable=False, readable=False, default=''),
     Field('reset_password_key', length=512,              # required
@@ -82,6 +82,8 @@ custom_auth_table = db[auth.settings.table_user_name] # get the custom_auth_tabl
 custom_auth_table.first_name.requires =   IS_NOT_EMPTY(error_message=auth.messages.is_empty)
 custom_auth_table.last_name.requires =   IS_NOT_EMPTY(error_message=auth.messages.is_empty)
 custom_auth_table.password.requires = [CRYPT()]
+custom_auth_table.promotion.requires = IS_IN_SET([2013,2014,2015]) #DONT FORGET TO REMOVE
+custom_auth_table.major.requires = IS_IN_SET(["CS","PHY","CHY","MATH","BIO","MCS","PC"])
 custom_auth_table.email.requires = [
   IS_EMAIL(error_message=auth.messages.invalid_email),
   IS_NOT_IN_DB(db, custom_auth_table.email)]
@@ -123,26 +125,17 @@ auth.settings.reset_password_requires_verification = True
 def widget(**kwargs):
     return lambda field, value, kwargs=kwargs: SQLFORM.widgets[field.type].widget(field, value, **kwargs)
 
-
-db.define_table('major',
-                Field('student', db.auth_user, writable=False, readable=False),
-                Field('maj_value', 'string')
-                )
-
-db.define_table('promotion',
-                Field('student', db.auth_user, writable=False, readable=False),
-                Field('prom_value', 'date')
-                )
-
 db.define_table('university',
                 Field('name'),
                 Field('lat', 'double'),
                 Field('lng', 'double'),
                 Field('country'),
                 Field('info', 'text'),
-                Field('created_on','datetime')
+                Field('created_on','datetime'),
+                Field('approved', 'boolean', writable=False, readable=False)
                 )
-db.university.created_on.default = datetime.utcnow()
+#db.university.created_on.default = datetime.utcnow()
+#db.university.approved.default = False
 
 db.define_table('grad',
                 Field('student', db.auth_user, writable=False, readable=False),
@@ -152,7 +145,7 @@ db.define_table('grad',
                 Field('photo'),
                 Field('approved', 'boolean', writable=False, readable=False)
                 )
-db.grad.approved.default = False
+#db.grad.approved.default = False
 
 db.define_table('question',
                 Field('author', db.auth_user, writable=False, readable=False),
@@ -165,9 +158,9 @@ db.define_table('question',
                 Field('done', 'boolean'),
                 )
 
-db.question.author.default = auth.user_id
-db.question.created_on.default = datetime.utcnow()
-db.question.done.default = False
+#db.question.author.default = auth.user_id
+#db.question.created_on.default = datetime.utcnow()
+#db.question.done.default = False
 
 
 # after defining tables, uncomment below to enable auditing

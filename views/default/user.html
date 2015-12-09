@@ -1,25 +1,131 @@
-{{extend 'layout.html'}}
+{{extend 'layout2.html'}}
 
 <h2>
-{{=T('Sign Up') if request.args(0) == 'register' else T('Log In') if request.args(0) == 'login' else T(request.args(0).replace('_',' ').title())}}
+{{=T('Sign Up') if request.args(0) == 'register' else T('Log In') if request.args(0) == 'login' else T('My profile') if request.args(0) == 'profile' else T(request.args(0).replace('_',' ').title())}}
 </h2>
 
 <div class="container">
+    {{if request.args(0)=='profile':}}
+        {{ if auth.user.promotion <= YEAR-2:}}
+            <div class="modal" id="editbox">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times"></i></button>
+                    <h4 class="modal-title">Edit your profile picture:</h4>
+                  </div>
+                  <form action="" enctype="multipart/form-data" method="post">
+                      <div class="modal-body">
+                              <input name="_formname" type="hidden" value="image_form">
+                              <input class="form-control" name="image_title" type="text" value="">
+                              <input class="form-control" name="image_file" type="file">
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <input type="submit" value="Submit" class="btn btn-primary" id="editpicbtn">
+                      </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+            {{ if grad_data['refused']:}}
+                <div class="alert alert-dismissible alert-warning">
+                  <button type="button" class="close" data-dismiss="alert"><i class="fa fa-times"></i></button>
+                  <h4>Please edit your profile:</h4>
+                  <p>{{=grad_data['refused_message']}}</p>
+                </div>
+            {{pass}}
+            <div class="row" style="margin-top: 40px">
+                <div id="profilebox" class="panel panel-default col-sm-3" style="padding: 0;border-bottom-color: #009EE0">
+                    <div style="position: absolute;z-index: 999;display: none" id="editpic" data-toggle="modal" data-target="#editbox">
+                        <span class="fa-stack fa-lg" style="cursor: pointer">
+                          <i class="fa fa-circle fa-stack-2x" style="color:rgba(255,255,255,.5);"></i>
+                          <i class="fa fa-pencil fa-stack-1x fa-inverse" style="color: white"></i>
+                        </span>
+                    </div>
+                    <img id="profilepic" src="{{=URL(f='link', args=grad_data['file_link'])}}" style="padding: 0" class="col-sm-12"/>
+                </div>
+                <div class="col-sm-9">
+                    <div class="form-group">
+                      <label class="control-label" for="blog">My blog:</label>
+                      <input type="text" class="form-control" id="blog" placeholder="Link to your blog..." value="{{=grad_data['link_blog']}}">
+                      <span #="nolink"></span>
+                    </div>
+                    <div class="form-group">
+                      <label class="control-label" for="univ">My 3rd year university:</label>
+                      <input type="text" class="form-control" id="univ" autocomplete="off" data-provide="typeahead" placeholder="Your exchange university..." value="{{=grad_data['university']}}">
+                    </div>
+                    <div class="form-group">
+                        <label for="quote" class="control-label">My motivational quote:</label>
+                        <textarea class="form-control" rows="3" id="quote" placeholder="A quote that describe your experience in that university...">{{=grad_data['quote']}}</textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <button type="button" id="editbtn" class="btn btn-primary pull-right">Edit your profile</button>
+            </div>
+            <script>
+                $( "#editbtn" ).on( "click", function() {
+                    var blog = $('#blog').val();
+                    var univ = $('#univ').val();
+                    var quote = $('#quote').val();
+
+                    $.ajax("{{=URL('default','profile_edit', user_signature=True)}}",
+                        {
+                            data: {
+                                blog:blog,
+                                univ:univ,
+                                quote:quote
+                            },
+                            success: function (data) {
+                                $('#editbtn').removeClass('btn-primary');
+                                $('#editbtn').addClass('btn-success');
+                                $('#editbtn').html('Edited!');
+                                $('#editbtn').prop('disabled', true);
+                                location.reload();
+                            },
+                            method: 'POST'
+                        }
+                    );
+                });
+                $( "#profilebox" ).on( "mouseover", function() {
+                    $("#editpic").css('display','block');
+                    var size = $( "#profilepic").width();
+                    $("#editpic").css('font-size',(size/2.66)+'px');
+                });
+                $( "#profilebox" ).on( "mouseout", function() {
+                    $("#editpic").css('display','none');
+                });
+                $( ".form-control" ).on( "focus", function() {
+                    $('#editbtn').removeClass('btn-success');
+                    $('#editbtn').addClass('btn-primary');
+                    $('#editbtn').html('Edit your profile');
+                    $('#editbtn').prop('disabled', false);
+                });
+                $.get('{{=URL('default','universities',args=['names'], user_signature=True)}}', function(data){
+                    $("#univ").typeahead({ source:data });
+                },'json');
+            </script>
+        {{else:}}
+            TODO
+        {{pass}}
+    {{else:}}
     <div class="row">
         <div id="web2py_user_form" class="col-lg-6">
-        {{
-        if request.args(0)=='login':
-            if not 'register' in auth.settings.actions_disabled:
-                form.add_button(T('Sign Up'),URL(args='register', vars={'_next': request.vars._next} if request.vars._next else None),_class='btn btn-default')
+            {{
+            if request.args(0)=='login':
+                if not 'register' in auth.settings.actions_disabled:
+                    form.add_button(T('Sign Up'),URL(args='register', vars={'_next': request.vars._next} if request.vars._next else None),_class='btn btn-default')
+                pass
+                if not 'request_reset_password' in auth.settings.actions_disabled:
+                    form.add_button(T('Lost Password'),URL(args='request_reset_password'),_class='btn btn-default')
+                pass
             pass
-            if not 'request_reset_password' in auth.settings.actions_disabled:
-                form.add_button(T('Lost Password'),URL(args='request_reset_password'),_class='btn btn-default')
-            pass
-        pass
-        =form
-        }}
+            =form
+            }}
         </div>
     </div>
+    {{pass}}
 </div>
 
 

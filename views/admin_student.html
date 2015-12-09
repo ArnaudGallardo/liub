@@ -1,0 +1,218 @@
+<div class="container-fluid" id="target"></div>
+<script id="template" type="text/ractive">
+    <div style="margin-bottom:20px">
+        <a class="btn btn-default btn-xs" href="{{=URL('default','admin')}}"><i class="fa fa fa-chevron-circle-left"></i> Back</a>
+    </div>
+    {% #if error.is %}
+    <div class="alert alert-dismissible alert-danger">
+      <button type="button" class="close" data-dismiss="alert"><i class="fa fa-times"></i></button>
+      <h4>Error!</h4>
+      <p>{% error.message %}</p>
+    </div>
+    {% /if %}
+    <div class="modal" id="refusemessage">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="fa fa-times"></i></button>
+            <h4 class="modal-title">Why is this profile refused:</h4>
+          </div>
+          <div class="modal-body">
+              <div class="row">
+                <textarea id="message" placeholder="Enter your message and press submit..." rows="4" class="col-sm-12"></textarea>
+              </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" data-gradid="{% refuse_id %}" on-click="sendrefuse">Submit</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {% #grad_data:cpt %}
+        <div class="jumbotron">
+            <div class="row">
+                <img src="{{=URL(f='link')}}/{% file_link %}" class="col-sm-4"/>
+                <div class="col-sm-8">
+                    <p style="margin-bottom:0">{% student %}</p>
+                    <i>{% university %}</i>
+                    <p style="margin-top:20px">
+                        <a href="#">{% link_blog %}</a><br/>
+                        {% quote %}
+                    </p>
+                </div>
+            </div>
+            <div style="margin-top:20px">
+                <button type="button" class="btn btn-primary" data-gradid="{% id %}" on-click="validate">Validate</button>
+                <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#refusemessage" data-gradid="{% id %}" on-click="refuse">Refuse</button>
+            </div>
+        </div>
+    {% /grad_data %}
+
+    <ul class="pagination pagination-sm center">
+      <li id="goto_first" class="disabled"><a href="#">&laquo;</a></li>
+      {% #pages:id %}
+      <li id="goto{% id+1 %}"><a href="#" on-click="change_page">{% id+1 %}</a></li>
+      {% /pages %}
+      <li id="goto_last"><a href="#">&raquo;</a></li>
+    </ul>
+</script>
+<script>
+    var editing = false;
+    // Ractive object
+    var MAIN = new Ractive({
+        el: '#target',
+        template: '#template',
+        delimiters: ['{%', '%}'],
+        tripleDelimiters: ['{%%', '%%}'],
+        data: {
+            grad_data: {},
+            refuse_id:"",
+            error:{
+                is:false,
+                message:""
+            },
+            page:1,
+            pages:[]
+        }
+    });
+    refresh();
+    //Allow the user to get the list of posts without the new posts created by him (because also stored locally)
+    function refresh() {
+        $.ajax("{{=URL('default','admin_data_grad', user_signature=True)}}",
+            {
+                method: 'POST',
+                success: function (data) {
+                    MAIN.set('pages', data['pages']);
+                    var start = (MAIN.get('page')-1)*3;
+                    var grads = data['result']
+                    grads.splice(0,start);
+                    grads.splice(5,grads.length);
+                    MAIN.set('grad_data', grads);
+                    update_notif(data['uni'],data['grad']);
+                    $('#goto'+MAIN.get('page')).addClass('active');
+                },
+                error: function () {
+                    var error = {
+                        is:true,
+                        message:"Error when loading profiles list. Reload the page."
+                    };
+                    MAIN.set('error',error);
+                }
+            }
+        );
+    };
+
+    MAIN.on('refuse', function(event) {
+        var t = $(event.original.target);
+        var gradid = t.data('gradid');
+        MAIN.set('refuse_id',gradid);
+    });
+
+    MAIN.on('validate', function(event) {
+        var t = $(event.original.target);
+        var gradid = t.data('gradid');
+        $.ajax("{{=URL('default','admin_validate_grad', user_signature=True)}}",
+                {
+                    data: {
+                        id:gradid
+                    },
+                    method: 'POST',
+                    success: function (data) {
+                        refresh();
+                    },
+                    error: function () {
+                        var error = {
+                            is:true,
+                            message:"Error when changing the student profile status to verified. Reload the page."
+                        };
+                        MAIN.set('error',error);
+                    }
+                }
+        );
+    });
+
+    MAIN.on('sendrefuse', function(event) {
+        var t = $(event.original.target);
+        var id = t.data('gradid');
+        var message = $('#message').val();
+        $.ajax("{{=URL('default','admin_refuse_grad', user_signature=True)}}",
+                {
+                    data: {
+                        id:id,
+                        message:message
+                    },
+                    method: 'POST',
+                    success: function (data) {
+                        $('#message').val("");
+                        $('#refusemessage').modal('hide');
+                        refresh();
+                    },
+                    error: function () {
+                        var error = {
+                            is:true,
+                            message:"Error when sending the student profile refuse message from database. Reload the page."
+                        };
+                        MAIN.set('error',error);
+                    }
+                }
+        );
+    });
+
+    function update_notif(uni,grad) {
+        $('#uni_notif').html(uni);
+        $('#grad_notif').html(grad);
+    };
+
+    MAIN.on('change_page', function(event) {
+        var t = $(event.original.target);
+        var page;
+        var pages = MAIN.get('pages');
+        $('.active').removeClass('active');
+        if (t.html() == "&laquo;") {
+            page = 1;
+        }
+        else if (t.html() == "&raquo;") {
+            page = pages[pages.length-1];
+        }
+        else {
+            page = parseInt(t.html());
+        }
+        MAIN.set('page',page);
+        if (page == 1) {
+            $('#goto_first').addClass('disabled');
+        }
+        else {
+            $('#goto_first').removeClass('disabled');
+        }
+        if (page == pages[pages.length-1]){
+            $('#goto_last').addClass('disabled');
+        }
+        else {
+            $('#goto_last').removeClass('disabled');
+        }
+        refresh();
+    });
+
+    //MAIN.observe( 'year', refresh);
+    setInterval(refresh, 10000);
+    /*
+        Aucun link sur le <a>                                             ()
+    */
+    /*
+        <tr class="{% class %}">
+            <td>{% id %}</td>
+            <td contenteditable="true" on-typing="editing" data-univct="lat" data-univid="{% id %}" data-tableid="{% cpt %}">{% lat %}</td>
+            <td contenteditable="true" on-typing="editing" data-univct="lng" data-univid="{% id %}" data-tableid="{% cpt %}">{% lng %}</td>
+            <td contenteditable="true" on-typing="editing" data-univct="name" data-univid="{% id %}" data-tableid="{% cpt %}">{% name %}</td>
+            <td contenteditable="true" on-typing="editing" data-univct="info" data-univid="{% id %}" data-tableid="{% cpt %}">{% info %}</td>
+            <td contenteditable="true" on-typing="editing" data-univct="country" data-univid="{% id %}" data-tableid="{% cpt %}">{% country %}</td>
+            {% #if approved %}
+            <td><button type="button" on-click="delete" data-univid="{% id %}" class="btn btn-danger">Delete</button></td>
+            {% else %}
+            <td><button type="button" on-click="validate" data-toggle="modal" data-target="#areyousure" data-univid="{% id %}" data-tableid="{% cpt %}" class="btn btn-primary">Validate</button></td>
+            {%/if%}
+        </tr>
+     */
+</script>

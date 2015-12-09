@@ -24,8 +24,8 @@ response.google_analytics_id = None
 #########################################################################
 if request.function == 'admin':
     response.menu = [
-        (XML(T('New ')+I(_class='fa fa-university')+' '+str(SPAN('100',_class='badge')), sanitize=False), (request.function=='search'), URL('default', 'search'), []),
-        (XML(T('Complete profiles ')+str(SPAN('100',_class='badge')), sanitize=False), (request.function=='ask'), URL('default', 'ask'), []),
+        (XML(T('New ')+I(_class='fa fa-university')+' '+str(SPAN('',_class='badge',_id='uni_notif')), sanitize=False), ((request.function=='admin') & (request.args(0) == 'university')), URL('default', 'admin',args=['university']), []),
+        (XML(T('New ')+I(_class='fa fa-graduation-cap')+' '+str(SPAN('',_class='badge',_id='grad_notif')), sanitize=False), ((request.function=='admin') & (request.args(0) == 'student')), URL('default', 'admin',args=['student']), []),
     ]
 else:
     response.menu = [

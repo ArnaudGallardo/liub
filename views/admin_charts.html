@@ -1,0 +1,171 @@
+<div class="container-fluid" id="chart_wrapper"></div>
+<script id="template" type="text/ractive">
+    <h1>Number of questions per year:</h1>
+    <select value='{% year %}'>
+        <option selected disabled>Select a year</option>
+        {% #years %}
+            <option value='{% id %}'>{% name %}</option>
+        {% /years %}
+    </select>
+    <canvas id="questions_chart" width="{% width %}" height="400px"></canvas>
+    <div class="row">
+        <div class="col-lg-6 col-md-6 col-sm-6" id="chart_wrapper_two">
+            <h2>Number of students per year:</h2>
+            <canvas id="students_chart" width="{% width_two %}" height="400px"></canvas>
+        </div>
+        <div class="col-lg-6 col-md-6 col-sm-6">
+            <h4>Verified universities:</h4>
+            <canvas id="universities_chart" width="{% width_two %}" height="200px"></canvas>
+            <h4>Verified students profiles:</h4>
+            <canvas id="grads_chart" width="{% width_two %}" height="200px"></canvas>
+        </div>
+    </div>
+</script>
+<script>
+    // Ractive object
+    var MAIN = new Ractive({
+        el: '#chart_wrapper',
+        template: '#template',
+        delimiters: ['{%', '%}'],
+        tripleDelimiters: ['{%%', '%%}'],
+        data: {
+            questions_data: [],
+            students_data: [],
+            universities_data: [],
+            grads_data: [],
+            year: 2013,
+            years: [
+                { id: '2013', name: '2013' },
+                { id: '2014', name: '2014' },
+                { id: '2015', name: '2015' },
+            ],
+            promotions: ["2013","2014","2015"],
+            width: $("#chart_wrapper").width(),
+            width_two: $("#chart_wrapper_two").width()
+        }
+    });
+
+    var data = {
+        labels: ["{{=T("January")}}", "{{=T("February")}}","{{=T("March")}}","{{=T("April")}}","{{=T("May")}}",
+            "{{=T("June")}}","{{=T("July")}}","{{=T("August")}}","{{=T("September")}}","{{=T("October")}}",
+            "{{=T("November")}}","{{=T("December")}}"],
+        datasets: [
+            {
+                label: "Number of questions",
+                fillColor: "rgba(0,158,224,0.2)",
+                strokeColor: "rgba(0,158,224,1)",
+                pointColor: "rgba(0,158,224,1)",
+                pointStrokeColor: "#fff",
+                pointHighlightFill: "#fff",
+                pointHighlightStroke: "rgba(0,158,224,1)",
+                data: [0,0,0,0,0,0,0,0,0,0,0,0]
+            }
+        ]
+    };
+
+    var data_student = {
+        labels: MAIN.get("promotions"),
+        datasets: [
+            {
+                label: "Number of students",
+                fillColor: "rgba(0,158,224,0.5)",
+                strokeColor: "rgba(0,158,224,0.8)",
+                highlightFill: "rgba(0,158,224,0.75)",
+                highlightStroke: "rgba(0,158,224,1)",
+                data: [0,0,0]
+            }
+        ]
+    };
+
+    var data_universities = [
+        {
+            value: 0,
+            color:"#009EE0",
+            highlight: "#009EE0",
+            label: "Verified"
+        },
+        {
+            value: 100,
+            color: "#443A31",
+            highlight: "#443A31",
+            label: "Unverified"
+        }
+    ]
+    var options = {
+        animation : false,
+    }
+
+    // Get context with jQuery - using jQuery's .get() method.
+    var ctx = $("#questions_chart").get(0).getContext("2d");
+    var ctx_student = $("#students_chart").get(0).getContext("2d");
+    var ctx_universities = $("#universities_chart").get(0).getContext("2d");
+    var ctx_grads = $("#grads_chart").get(0).getContext("2d");
+    // This will get the first returned node in the jQuery collection.
+    var questions_chart = new Chart(ctx).Line(data,options);
+    var students_chart = new Chart(ctx_student).Bar(data_student,options);
+    var universities_chart = new Chart(ctx_universities).Pie(data_universities,options);
+    var grads_chart = new Chart(ctx_grads).Pie(data_universities,options);
+
+    //Allow the user to get the list of posts without the new posts created by him (because also stored locally)
+    function refresh() {
+        // Loads the list of universities.
+        $.ajax("{{=URL('default','admin_data', user_signature=True)}}",
+              {
+                data: {
+                  year: MAIN.get('year')
+                },
+                method: 'POST',
+                success: function (data) {
+                    MAIN.set('questions_data',data.questions);
+                    MAIN.set('years',data.questions_label);
+                    MAIN.set('students_data',data.students_data);
+                    MAIN.set('students_label',data.students_label);
+                    MAIN.set('universities_data',data.universities);
+                    MAIN.set('grads_data',data.grads);
+                    update_question_graph();
+                    update_student_graph();
+                    update_university_graph();
+                    update_grads_graph();
+                    update_notif();
+                }
+              }
+        );
+    };
+    function update_question_graph() {
+        var data =  MAIN.get('questions_data');
+        jQuery.each(data, function( i, val ) {
+            questions_chart.datasets[0].points[i].value = val;
+            questions_chart.update();
+        });
+    };
+    function update_student_graph() {
+        var data =  MAIN.get('students_data');
+        jQuery.each(data, function( i, val ) {
+            students_chart.datasets[0].bars[i].value = val;
+            students_chart.update();
+        });
+    };
+    function update_university_graph() {
+        var data =  MAIN.get('universities_data');
+        jQuery.each(data, function( i, val ) {
+            universities_chart.segments[i].value = val;
+            universities_chart.update();
+        });
+    };
+    function update_grads_graph() {
+        var data =  MAIN.get('grads_data');
+        jQuery.each(data, function( i, val ) {
+            grads_chart.segments[i].value = val;
+            grads_chart.update();
+        });
+    };
+    function update_notif() {
+        var data_univ =  MAIN.get('universities_data');
+        var data_grad =  MAIN.get('grads_data');
+        $('#uni_notif').html(data_univ[1]);
+        $('#grad_notif').html(data_grad[1]);
+    };
+
+    MAIN.observe( 'year', refresh);
+    setInterval(refresh, 10000);
+</script>

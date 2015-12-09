@@ -1,0 +1,22 @@
+{{extend "layout2.html"}}
+
+<form action="" enctype="multipart/form-data" method="post">
+	<input name="_formname" type="hidden" value="image_form">
+	<input class="string" name="image_title" type="text" value="">
+	<input class="upload" name="image_file" type="file">
+	<input type="submit" value="Submit">
+</form>
+
+<ul>
+{{for image in images:}}
+	<li>
+		<a href="{{=URL(f='link', args=image.file_link)}}">
+			<img src="{{=URL(f='link', args=image.file_link)}}"/>
+			{{=image.title}}
+		</a>
+		<a href="{{=URL(f='download', args=image.file_link)}}">
+			[Download]
+		</a>
+	</li>
+{{pass}}
+</ul>

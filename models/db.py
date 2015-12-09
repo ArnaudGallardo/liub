@@ -15,6 +15,9 @@ from datetime import datetime
 ## once in production, remove reload=True to gain full speed
 myconf = AppConfig(reload=True)
 
+#GLOBAL VARIABLES
+YEAR = 2015
+TYPES = ['Documents','Classes','Campus Life','Other']
 
 if not request.env.web2py_runtime_gae:
     ## if NOT running on Google App Engine use SQLite or other DB
@@ -63,12 +66,12 @@ plugins = PluginManager()
 #########################################################################
 db.define_table(
     auth.settings.table_user_name,
-    Field('first_name', length=128, default=''),
-    Field('last_name', length=128, default=''),
+    Field('first_name', length=128, default='',writable=False),
+    Field('last_name', length=128, default='',writable=False),
     Field('email', length=128, default='', unique=True), # required
     Field('password', 'password', length=512,            # required
           readable=False, label='Password'),
-    Field('promotion','integer'),
+    Field('promotion','integer',writable=False),
     Field('major'),
     Field('registration_key', length=512,                # required
           writable=False, readable=False, default=''),
@@ -125,6 +128,11 @@ auth.settings.reset_password_requires_verification = True
 def widget(**kwargs):
     return lambda field, value, kwargs=kwargs: SQLFORM.widgets[field.type].widget(field, value, **kwargs)
 
+db.define_table('image',
+                Field('title'),
+                Field('file_link', 'upload'),
+                format = '%(title)s')
+
 db.define_table('university',
                 Field('name'),
                 Field('lat', 'double'),
@@ -142,9 +150,14 @@ db.define_table('grad',
                 Field('university', 'reference university'),
                 Field('blog'),
                 Field('yr_quote', 'text'),
-                Field('photo'),
-                Field('approved', 'boolean', writable=False, readable=False)
+                Field('picture','reference image'),
+                Field('approved', 'boolean', writable=False, readable=False),
+                Field('modified_on','datetime', writable=False, readable=False),
+                Field('refused', 'boolean', writable=False, readable=False),
+                Field('refused_message','text', writable=False, readable=False)
                 )
+db.grad.refused.default = False
+#db.grad.modified_on.default = datetime.utcnow()
 #db.grad.approved.default = False
 
 db.define_table('question',
@@ -157,7 +170,7 @@ db.define_table('question',
                 Field('content_type', widget=widget(_placeholder='Type')),
                 Field('done', 'boolean'),
                 )
-
+db.question.content_type.requires = IS_IN_SET(TYPES)
 #db.question.author.default = auth.user_id
 #db.question.created_on.default = datetime.utcnow()
 #db.question.done.default = False

@@ -521,9 +521,10 @@ def user():
         'refused':False,
         'refused_message':''
     }
-    if request.args(0)=='profile' and user_prom <= YEAR-2:
-        if auth.is_logged_in():
+    if auth.is_logged_in():
             user_prom = db(db.auth_user.id == auth.user_id).select(db.auth_user.promotion).first().promotion
+    print user_prom <= YEAR-2
+    if request.args(0)=='profile' and user_prom <= YEAR-2:
         #First check if user is in grad db
         is_in = db(db.grad.student == auth.user_id).select(db.grad.id).first()
         if is_in is None:

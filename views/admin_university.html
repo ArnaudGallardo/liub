@@ -97,6 +97,7 @@
     refresh();
     //Allow the user to get the list of posts without the new posts created by him (because also stored locally)
     function refresh() {
+        console.log(editing);
         //console.log('refresh:'+(!editing));
         if (editing == false) {
             // Loads the list of universities.
@@ -131,7 +132,6 @@
     MAIN.on('editing', function(event) {
         var t = $(event.original.target);
         var univ_id = t.data('univid');
-        var table_id = t.data('tableid');
         var univ_type = t.data('univct');
         var text = t.text();
         //console.log('ID:'+univ_id+'|VAR:'+univ_type+'|TEXT:'+text+'|TABLEID:'+table_id);
@@ -139,10 +139,6 @@
             editing = true;
         }
         if (event.typingState == "paused" || event.typingState == "stopped") {
-            var data = MAIN.get('univ_data');
-            data[table_id][univ_type] = text;
-            data[table_id]['class'] = 'warning';
-            MAIN.set('univ_data',data);
             edit_university(univ_id,univ_type,text);
         }
         if (event.typingState == "stopped") {

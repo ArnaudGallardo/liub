@@ -53,8 +53,7 @@ def user_bar():
         head = LI(text_head,_class='dropdown-header')
         lang = A(text_language, _href='#', _id='lang')
         logout = A(text_logout, _href=action+'/logout')
-        admin = ''
-        if (auth.has_membership(3,auth.user_id)):
+        if (auth.has_membership(1,auth.user_id)):
             admin = A(text_admin,_href=URL('default','admin'))
         profile = A(text_profile, _href=action+'/profile')
         button = BUTTON(I(_class='fa fa-cog'),_class='btn btn-default dropdown-toggle', _type='button',_id='profileMenu'

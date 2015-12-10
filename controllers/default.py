@@ -539,6 +539,7 @@ def user():
                 image = db.image.file_link.store(image_form.vars.image_file.file, image_form.vars.image_file.filename)
                 id = db.image.insert(file_link=image,title=image_form.vars.image_title)
                 db.grad.update_or_insert((db.grad.student == auth.user.id), picture=id)
+                resize_image(image)
                 redirect(URL('default','user', args=['profile']))
         rows = db(db.grad.student==auth.user.id).select(db.grad.ALL)
         d = [{'id':r.id,'university': check_univ_value(r.university),'link_blog':r.blog,

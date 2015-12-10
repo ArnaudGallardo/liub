@@ -224,7 +224,7 @@ def student_data():
     for s in d:
         r = db(db.grad.student == s['id']).select(db.grad.ALL).first()
         if r is not None:
-            s['data']['university'] = r.university.name
+            s['data']['university'] = check_univ_value(r.university)
             s['data']['blog'] = r.blog
             s['data']['quote'] = r.yr_quote
             s['data']['picture'] = r.picture.file_link
@@ -510,8 +510,7 @@ def user():
     """
     image_form = None
     user_prom = None
-    if auth.is_logged_in():
-        user_prom = db(db.auth_user.id == auth.user_id).select(db.auth_user.promotion).first().promotion
+
     user_data = {
         'id':'',
         'university':'',
@@ -522,6 +521,8 @@ def user():
         'refused_message':''
     }
     if request.args(0)=='profile' and user_prom <= YEAR-2:
+        if auth.is_logged_in():
+            user_prom = db(db.auth_user.id == auth.user_id).select(db.auth_user.promotion).first().promotion
         #First check if user is in grad db
         is_in = db(db.grad.student == auth.user_id).select(db.grad.id).first()
         if is_in is None:

@@ -80,8 +80,8 @@ db.define_table(
     Field('email', length=128, default='', unique=True), # required
     Field('password', 'password', length=512,            # required
           readable=False, label='Password'),
-    Field('promotion','integer',writable=False),
-    Field('major',writable=False),
+    Field('promotion','integer'),
+    Field('major'),
     Field('last_visit','datetime',writable=False),
     Field('registration_key', length=512,                # required
           writable=False, readable=False, default=''),
@@ -90,14 +90,13 @@ db.define_table(
     Field('registration_id', length=512,                 # required
           writable=False, readable=False, default=''))
 
-db.auth_user.promotion.default = 2013
 
 ## do not forget validators
 custom_auth_table = db[auth.settings.table_user_name] # get the custom_auth_table
 custom_auth_table.first_name.requires =   IS_NOT_EMPTY(error_message=auth.messages.is_empty)
 custom_auth_table.last_name.requires =   IS_NOT_EMPTY(error_message=auth.messages.is_empty)
 custom_auth_table.password.requires = [CRYPT()]
-custom_auth_table.promotion.requires = IS_IN_SET([2013,2014,2015]) #DONT FORGET TO REMOVE
+#custom_auth_table.promotion.requires = IS_IN_SET([2013,2014,2015]) #DONT FORGET TO REMOVE
 custom_auth_table.major.requires = IS_IN_SET(MAJOR)
 custom_auth_table.email.requires = [
   IS_EMAIL(error_message=auth.messages.invalid_email),
@@ -207,6 +206,10 @@ db.answer.edited.default = False
 is_timezone_unknown = (session.user_timezone is None)
 user_timezone = session.user_timezone or 'UTC'
 
+
+#Custom membership groups
+db.auth_group.update_or_insert((db.auth_group.role == 'admin'),role="admin",description="Website administrator")
+db.auth_group.update_or_insert((db.auth_group.role == 'student'),role="student",description="Website user")
 
 # after defining tables, uncomment below to enable auditing
 # auth.enable_record_versioning(db)

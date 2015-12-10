@@ -11,7 +11,7 @@
 <div class="notearea row">
     <div id="summernote"></div>
     <div id="notes">
-        <h1 id="note_title"></h1>
+        <h1 id="note_title">Hints:</h1>
         <p id="note_content"></p>
     </div>
 </div>
@@ -62,8 +62,8 @@
         });
 
         $( "#question_title" ).focus(function() {
-            $('#note_title').html("The statement");
-            $('#note_content').html("Simply ask your question.<br>Don't use too much words here, you have a lot of empty space in the content part.");
+            $('#note_title').html("The question");
+            $('#note_content').html("Be specific but not verbose. You have plenty of room to include details in the content section!");
         });
         $( "#question_university" ).focus(function() {
             $('#note_title').html("The university");

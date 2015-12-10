@@ -9,10 +9,10 @@
   * Profile picture form css
 * Add new functions/pages:
   * ~~Answers page~~
-  * Index page for student
-  * custom error page
+  * Real 'Index' page for student (To do later)
+  * Custom error page : 404, 403... (To do later)
   * ~~Students search page~~
-  * Add new year button + New user list button
   * ~~Profile page for everyone~~
-  * Index page
-  * Google drive sharing files
+  * Improved index page (To do later)
+  * Better file hosting system (To do later)
+  * Improve database queries (To do later)

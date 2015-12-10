@@ -11,6 +11,7 @@
     <a href="{{=URL('default','search',args=['advice'])}}" class="searchitem" id="advice">
         <i class="fa fa-info"></i><br>
         <p>{{=T('advice')}}</p>
+        {{if nb_notif>0:}}<p><span class="notif">{{=str(nb_notif)+" NEW"}}</span></p>{{pass}}
     </a>
     <a href="{{=URL('default','search',args=['university'])}}" class="searchitem" id="university">
         <i class="fa fa-university"></i>

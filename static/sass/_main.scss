@@ -99,7 +99,7 @@
 }
 
 .advice#done {
-  border-left: 5px solid lime;
+  border-left: 5px solid #00bb00;
 }
 
 .advice:hover {
@@ -190,4 +190,12 @@
       }
     }
   }
+}
+
+.notif {
+  background-color: $clrBdxBlue;
+  color: white;
+  padding: 5px;
+  font-size: 12px;
+  @include border-radius(20px);
 }

@@ -29,6 +29,7 @@ def search():
     print session.test
     style = None
     promos_list = []
+    nb_notif = 0
     if request.args(0)=='advice':
         print 'advice'
     elif request.args(0)=='student':
@@ -39,7 +40,14 @@ def search():
     elif request.args(0)=='university':
         style = open(os.path.join(request.folder, 'static', 'json', 'style.json'), 'rb').read()
         print 'university'
-    return dict(message=T('Search Page'),style=style,promos_list=promos_list)
+    elif request.args(0) is None:
+        l_visit = db(db.auth_user.id == auth.user_id).select(db.auth_user.last_visit).first().last_visit
+        print l_visit
+        if l_visit is None:
+            l_visit = datetime(1990,1,1)
+        result = db(db.question.created_on > l_visit).select(db.question.id)
+        nb_notif = len(result)
+    return dict(message=T('Search Page'),style=style,promos_list=promos_list,nb_notif=nb_notif)
 
 
 @auth.requires_login()
@@ -84,8 +92,18 @@ def edit_answer():
 @auth.requires_signature()
 def switch_good():
     id = request.vars.id
+    qid = db(db.answer.id == id).select(db.answer.question).first().question
     good = db(db.answer.id == id).select(db.answer.good).first().good
     db.answer.update_or_insert((db.answer.id == id),good=not good)
+
+    #Now we update the question 'done' status
+    count = db.answer.id.count()
+    good_answers = db(db.answer.question == qid).select(db.answer.good, count, groupby=db.answer.good)
+    nb = 0
+    for row in good_answers:
+        if row.answer.good == True:
+            nb = row[count]
+    db.question.update_or_insert((db.question.id == qid),done=nb >= 1)
     return 'ok'
 
 
@@ -125,6 +143,7 @@ def change_tz(date):
 
 @auth.requires_signature()
 def question_data():
+    db.auth_user.update_or_insert((db.auth_user.id == auth.user_id),last_visit=datetime.utcnow())
     univ = request.vars['search_data[univ]']
     type = request.vars['search_data[type]']
     content = request.vars['search_data[content]']
@@ -165,6 +184,9 @@ def question_data():
           'university':r.university.name,'content':str(XML(r.ques_content)),'keywords':r.keywords,
           'author':r.author.first_name+' '+r.author.last_name,'date':pretty.date(change_tz(r.created_on))}
          for r in results]
+    for f in d:
+        nb_answer = db(db.answer.question == f['id']).select(db.answer.id)
+        f['nb_answer'] = len(nb_answer)
     return response.json(d)
 
 
@@ -270,7 +292,7 @@ def ask():
     form.element(_id='question_university')['_data-provide']='typeahead'
     form.element(_id='question_university')['_autocomplete']='off'
     if form.process(onvalidation=question_process).accepted:
-        print form.vars
+        redirect(URL('default','search',args=['advice']))
     return dict(form=form)
 
 @auth.requires_signature()
@@ -454,6 +476,21 @@ def profile_edit_simple():
     return 'ok'
 
 
+def create_users():
+    raw_users = csv_to_dict()
+    for entry in raw_users:
+        user = db.auth_user.insert(first_name=entry['first_name'], last_name=entry['last_name'],email=entry['email'],promotion=entry['promotion'],password='')
+        auth.email_reset_password(db(db.auth_user.id == user).select().first())
+
+    #for user in db(db.auth_user.password == '').select():
+    #    auth.email_reset_password(user)
+    return 'ok'
+
+
+def check_univ_value(univ):
+    if univ is not None:
+        return univ.name
+    return ""
 
 def user():
     """
@@ -485,6 +522,12 @@ def user():
         'refused_message':''
     }
     if request.args(0)=='profile' and user_prom <= YEAR-2:
+        #First check if user is in grad db
+        is_in = db(db.grad.student == auth.user_id).select(db.grad.id).first()
+        if is_in is None:
+            refused=True
+            message = "You can now add new information to your profile. Don't forget that if a profile is complete, it will be used on a public page."
+            db.grad.insert(student=auth.user_id,refused=refused,refused_message=message)
         image_form = FORM(
         INPUT(_name='image_title',_type='text'),
         INPUT(_name='image_file',_type='file'))
@@ -497,7 +540,7 @@ def user():
                 db.grad.update_or_insert((db.grad.student == auth.user.id), picture=id)
                 redirect(URL('default','user', args=['profile']))
         rows = db(db.grad.student==auth.user.id).select(db.grad.ALL)
-        d = [{'id':r.id,'university': r.university.name,'link_blog':r.blog,
+        d = [{'id':r.id,'university': check_univ_value(r.university),'link_blog':r.blog,
               'file_link':r.picture.file_link,'quote':r.yr_quote,'refused':r.refused,'refused_message':r.refused_message} for r in rows]
         if d!=[]:
             if d[0]['university'] != None:

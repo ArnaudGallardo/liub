@@ -115,7 +115,7 @@
 
 /* line 101, ../sass/_main.scss */
 .advice#done {
-  border-left: 5px solid lime;
+  border-left: 5px solid #00bb00;
 }
 
 /* line 109, ../sass/_main.scss */
@@ -212,6 +212,17 @@
 /* line 188, ../sass/_main.scss */
 .advice .extract .bottom_line .tag-list {
   font-family: "Montserrat", sans-serif;
+}
+
+/* line 195, ../sass/_main.scss */
+.notif {
+  background-color: #009EE0;
+  color: white;
+  padding: 5px;
+  font-size: 12px;
+  -moz-border-radius: 20px;
+  -webkit-border-radius: 20px;
+  border-radius: 20px;
 }
 
 /* line 1, ../sass/_ask.scss */
@@ -356,4 +367,18 @@
 /* line 73, ../sass/_index.scss */
 .badge {
   background-color: #ff754e;
+}
+
+/* line 77, ../sass/_index.scss */
+.access_link {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  font-size: 25px;
+  background-color: #009EE0;
+}
+/* line 83, ../sass/_index.scss */
+.access_link a {
+  color: white;
+  padding: 5px;
 }

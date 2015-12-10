@@ -73,3 +73,15 @@
 .badge {
   background-color: #ff754e;
 }
+
+.access_link {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  font-size: 25px;
+  background-color: $clrBdxBlue;
+  a {
+    color: white;
+    padding: 5px;
+  }
+}

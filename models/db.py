@@ -16,7 +16,13 @@ from datetime import datetime
 myconf = AppConfig(reload=True)
 
 #GLOBAL VARIABLES
-YEAR = 2015
+now = datetime.utcnow()
+if (now.month >= 9) & (now.month<=12):
+    y = now.year
+else:
+    y = now.year-1
+#French scholar year September 20xx -> August 20xx+1 == 20xx
+YEAR = y
 TYPES = ['Documents','Classes','Campus Life','Other']
 MAJOR = ["CS","PHY","CHY","MATH","BIO","MCS","PC"]
 MAJOR_LG = ["Computer Science","Physics","Chemistry","Mathematics","Biology","Math/CS","Phys/Chem"]
@@ -76,6 +82,7 @@ db.define_table(
           readable=False, label='Password'),
     Field('promotion','integer',writable=False),
     Field('major'),
+    Field('last_visit','datetime'),
     Field('registration_key', length=512,                # required
           writable=False, readable=False, default=''),
     Field('reset_password_key', length=512,              # required
@@ -135,6 +142,7 @@ db.define_table('image',
                 Field('title'),
                 Field('file_link', 'upload'),
                 format = '%(title)s')
+db.image.update_or_insert((db.image.id == 1),title="Defaut profile picture",file_link="image.file_link.profil.svg")
 
 db.define_table('university',
                 Field('name'),

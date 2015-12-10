@@ -6,7 +6,7 @@
 #########################################################################
 
 response.logo = A(IMG(_src=URL('static', 'images/logo.png'),
-                      _height="45px", _title="LIUB"), _class="brand",_href="www.liub.fr")
+                      _height="45px", _title="LIUB"), _class="brand",_href=URL('default','search'))
 response.title = request.application.replace('_',' ').title()
 response.subtitle = ''
 

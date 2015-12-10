@@ -29,8 +29,8 @@
         <div class="advice" {% #if done %}id="done"{%/if%}>
             <div class="type">
                 {%% icon %%}<br>
-                <span id="nb_answer">3</span>
-                <span>comments</span>
+                <span id="nb_answer">{% nb_answer %}</span>
+                <span>answer{% #if nb_answer>1 || nb_answer==0 %}s{%/if%}</span>
             </div>
             <div class="extract">
                 <span class="top_line">{% title %} <span class="univ">@{% university %}</span></span>

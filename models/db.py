@@ -75,20 +75,22 @@ plugins = PluginManager()
 #########################################################################
 db.define_table(
     auth.settings.table_user_name,
-    Field('first_name', length=128, default='',writable=False),
-    Field('last_name', length=128, default='',writable=False),
+    Field('first_name', length=128, default=''),
+    Field('last_name', length=128, default=''),
     Field('email', length=128, default='', unique=True), # required
     Field('password', 'password', length=512,            # required
           readable=False, label='Password'),
     Field('promotion','integer',writable=False),
-    Field('major'),
-    Field('last_visit','datetime'),
+    Field('major',writable=False),
+    Field('last_visit','datetime',writable=False),
     Field('registration_key', length=512,                # required
           writable=False, readable=False, default=''),
     Field('reset_password_key', length=512,              # required
           writable=False, readable=False, default=''),
     Field('registration_id', length=512,                 # required
           writable=False, readable=False, default=''))
+
+db.auth_user.promotion.default = 2013
 
 ## do not forget validators
 custom_auth_table = db[auth.settings.table_user_name] # get the custom_auth_table

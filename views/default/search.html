@@ -3,6 +3,8 @@
 {{include 'university.html'}}
 {{elif request.args(0)=='advice':}}
 {{include 'advice.html'}}
+{{elif request.args(0)=='student':}}
+{{include 'student.html'}}
 {{else:}}
 <div class="lookfor">
     <h1>{{=T('Looking for')}}:</h1>
@@ -14,7 +16,7 @@
         <i class="fa fa-university"></i>
         <p>{{=T('university')}}</p>
     </a>
-    <a href="{{=URL('default','search',args=['user'])}}" class="searchitem" id="user">
+    <a href="{{=URL('default','search',args=['student'])}}" class="searchitem" id="user">
         <i class="fa fa-user"></i>
         <p>{{=T('student')}}</p>
     </a>

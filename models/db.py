@@ -145,11 +145,11 @@ db.define_table('university',
                 Field('created_on','datetime'),
                 Field('approved', 'boolean', writable=False, readable=False)
                 )
-#db.university.created_on.default = datetime.utcnow()
-#db.university.approved.default = False
+db.university.created_on.default = datetime.utcnow()
+db.university.approved.default = False
 
 db.define_table('grad',
-                Field('student', db.auth_user, writable=False, readable=False),
+                Field('student', db.auth_user, writable=False, readable=False, unique=True),
                 Field('university', 'reference university'),
                 Field('blog'),
                 Field('yr_quote', 'text'),
@@ -160,8 +160,9 @@ db.define_table('grad',
                 Field('refused_message','text', writable=False, readable=False)
                 )
 db.grad.refused.default = False
-#db.grad.modified_on.default = datetime.utcnow()
-#db.grad.approved.default = False
+db.grad.approved.default = False
+db.grad.picture.default = 1
+db.grad.modified_on.default = datetime.utcnow()
 
 db.define_table('question',
                 Field('author', db.auth_user, writable=False, readable=False),
@@ -178,6 +179,16 @@ db.question.author.default = auth.user_id
 db.question.created_on.default = datetime.utcnow()
 db.question.done.default = False
 
+db.define_table('answer',
+                Field('question','reference question'),
+                Field('author', db.auth_user, writable=False, readable=False),
+                Field('answer_content', 'text'),
+                Field('posted_on','datetime', writable=False, readable=False),
+                Field('good', 'boolean'),
+                )
+db.answer.author.default = auth.user_id
+db.answer.posted_on.default = datetime.utcnow()
+db.answer.good.default = False
 
 #TIMEZONE
 is_timezone_unknown = (session.user_timezone is None)

@@ -88,9 +88,9 @@
                     var start = (MAIN.get('page')-1)*3;
                     var grads = data['result']
                     grads.splice(0,start);
-                    grads.splice(5,grads.length);
+                    grads.splice(3,grads.length);
                     MAIN.set('grad_data', grads);
-                    update_notif(data['uni'],data['grad']);
+                    update_notif();
                     $('#goto'+MAIN.get('page')).addClass('active');
                 },
                 error: function () {
@@ -160,9 +160,23 @@
         );
     });
 
-    function update_notif(uni,grad) {
-        $('#uni_notif').html(uni);
-        $('#grad_notif').html(grad);
+    function update_notif() {
+        $.ajax("{{=URL('default','get_notif_data', user_signature=True)}}",
+            {
+                method: 'POST',
+                success: function (data) {
+                    $('#uni_notif').html(data['uni']);
+                    $('#grad_notif').html(data['grad']);
+                },
+                error: function () {
+                    var error = {
+                        is:true,
+                        message:"Error when loading notifications data. Reload the page."
+                    };
+                    MAIN.set('error',error);
+                }
+            }
+        );
     };
 
     MAIN.on('change_page', function(event) {

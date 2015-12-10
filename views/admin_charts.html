@@ -159,11 +159,24 @@
             grads_chart.update();
         });
     };
+
     function update_notif() {
-        var data_univ =  MAIN.get('universities_data');
-        var data_grad =  MAIN.get('grads_data');
-        $('#uni_notif').html(data_univ[1]);
-        $('#grad_notif').html(data_grad[1]);
+        $.ajax("{{=URL('default','get_notif_data', user_signature=True)}}",
+            {
+                method: 'POST',
+                success: function (data) {
+                    $('#uni_notif').html(data['uni']);
+                    $('#grad_notif').html(data['grad']);
+                },
+                error: function () {
+                    var error = {
+                        is:true,
+                        message:"Error when loading notifications data. Reload the page."
+                    };
+                    MAIN.set('error',error);
+                }
+            }
+        );
     };
 
     MAIN.observe( 'year', refresh);

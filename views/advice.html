@@ -16,7 +16,7 @@
             <input id="s_content" type="text" class="form-control" placeholder="Special content" value={% search_data.content %}>
             <span class="input-group-addon"><i class="fa fa-certificate fa-fw"></i></span>
             <select class="form-control" value="{% search_data.major %}" id="s_major" style="border-radius:0;-webkit-appearance: none;">
-            {{=OPTION('All major',_value='All')}}
+            {{=OPTION('All majors',_value='All')}}
             {{for o in MAJOR_OPTIONS:}}
             {{=o}}
             {{pass}}
@@ -85,16 +85,6 @@
                 method: 'POST',
                 success: function (data) {
                     MAIN.set('question_data', data);
-                    /*
-                    $.each(MAIN.get('question_data'), function( index, value ) {
-                        //alert( index + ": " + value.id );
-                        console.log(index + ": " + value.keywords);
-                        $('#ad_tags_'+index).tags({
-                            readOnly: true,
-                            tagData:value.keywords
-                        });
-                    });
-                    */
                 },
                 error: function () {
                     var error = {

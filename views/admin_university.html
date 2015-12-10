@@ -112,7 +112,7 @@
                             univs.splice(5,univs.length);
                             MAIN.set('univ_data', univs);
                             MAIN.set('univ_v_data',data['result_v']);
-                            update_notif(data['uni'],data['grad']);
+                            update_notif();
                             $('#goto'+MAIN.get('page')).addClass('active');
                         },
                         error: function () {
@@ -225,8 +225,22 @@
     });
 
     function update_notif(uni,grad) {
-        $('#uni_notif').html(uni);
-        $('#grad_notif').html(grad);
+        $.ajax("{{=URL('default','get_notif_data', user_signature=True)}}",
+            {
+                method: 'POST',
+                success: function (data) {
+                    $('#uni_notif').html(data['uni']);
+                    $('#grad_notif').html(data['grad']);
+                },
+                error: function () {
+                    var error = {
+                        is:true,
+                        message:"Error when loading notifications data. Reload the page."
+                    };
+                    MAIN.set('error',error);
+                }
+            }
+        );
     };
 
     MAIN.on('change_page', function(event) {

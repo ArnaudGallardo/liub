@@ -1,12 +1,12 @@
 {{extend 'layout2.html'}}
 
-<h2>
+<h2 id="page_title">
 {{=T('Sign Up') if request.args(0) == 'register' else T('Log In') if request.args(0) == 'login' else T('My profile') if request.args(0) == 'profile' else T(request.args(0).replace('_',' ').title())}}
 </h2>
 
 <div class="container">
     {{if request.args(0)=='profile':}}
-        {{ if auth.user.promotion <= YEAR-2:}}
+        {{ if user_prom <= YEAR-2:}}
             <div class="modal" id="editbox">
               <div class="modal-dialog">
                 <div class="modal-content">
@@ -107,7 +107,36 @@
                 },'json');
             </script>
         {{else:}}
-            TODO
+            <h2>{{=grad_data['name']}}, {{=grad_data['promo']}}</h2>
+            <i><a href="mailto:{{=grad_data['email']}}">{{=grad_data['email']}}</a></i><br>
+            <div class="row" style="margin-top: 20px">
+                {{=SELECT(get_major_obj(grad_data['major']),_id="major",_class="selectpicker")}}
+                <button type="button" id="editbtn" class="btn btn-primary">Edit</button>
+            </div>
+            <script>
+                $( "#editbtn" ).on( "click", function() {
+                    var major = $('#major').val();
+
+                    $.ajax("{{=URL('default','profile_edit_simple', user_signature=True)}}",
+                        {
+                            data: {
+                                major:major
+                            },
+                            success: function (data) {
+                                $('#editbtn').removeClass('btn-primary');
+                                $('#editbtn').addClass('btn-success');
+                                $('#editbtn').html('Edited!');
+                                $('#editbtn').prop('disabled', true);
+                                location.reload();
+                            },
+                            error: function (data) {
+                                $('#page_title').html("Error with database or content.");
+                            },
+                            method: 'POST'
+                        }
+                    );
+                });
+            </script>
         {{pass}}
     {{else:}}
     <div class="row">

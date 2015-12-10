@@ -28,15 +28,18 @@ def index():
 def search():
     print session.test
     style = None
-    content = None
+    promos_list = []
     if request.args(0)=='advice':
         print 'advice'
-    elif request.args(0)=='user':
-        print 'user'
+    elif request.args(0)=='student':
+        promos = db().select(db.auth_user.promotion, groupby=db.auth_user.promotion)
+        for p in promos:
+            promos_list.append(p.promotion)
+        print 'student'
     elif request.args(0)=='university':
         style = open(os.path.join(request.folder, 'static', 'json', 'style.json'), 'rb').read()
         print 'university'
-    return dict(message=T('Search Page'),style=style, content=content)
+    return dict(message=T('Search Page'),style=style,promos_list=promos_list)
 
 
 def change_tz(date):
@@ -85,12 +88,60 @@ def question_data():
     query &= q_major
     query &= q_content
 
-    results = db(query).select(db.question.ALL)
+    results = db(query).select(db.question.ALL,orderby=~db.question.created_on)
     d = [{'id':r.id,'done': r.done,'icon': str(get_icon(r.content_type)),'title':r.title,
           'university':r.university.name,'content':str(XML(r.ques_content)),'keywords':r.keywords,
           'author':r.author.first_name+' '+r.author.last_name,'date':pretty.date(change_tz(r.created_on))}
          for r in results]
     return response.json(d)
+
+
+@auth.requires_signature()
+def student_data():
+    univ = request.vars['search_data[univ]']
+    promo = request.vars['search_data[promo]']
+    major = request.vars['search_data[major]']
+    q_univ = True
+    if univ != "":
+        univ_id = db(db.university.name==univ).select(db.university.id).first()
+        if univ_id is not None:
+            db_univ = db(db.grad.university == univ_id.id).select(db.grad.student)
+            li_students = []
+            for s in db_univ:
+                li_students.append(s.student)
+            q_univ = db.auth_user.id.belongs(li_students)
+    q_promo = True
+    if promo != "" and promo != "All":
+        q_promo = db.auth_user.promotion == promo
+    q_major = True
+    if major != "" and major != "All":
+        q_promo = db.auth_user.major == major
+
+    query = q_univ
+    query &= q_promo
+    query &= q_major
+
+    results = db(query).select(db.auth_user.ALL,orderby=db.auth_user.last_name)
+    d = []
+    for r in results:
+        d.append({'id':r.id,'data':{'name': r.first_name+' '+r.last_name,'email': r.email,'promo':r.promotion,
+                  'major':get_lg_major(r.major)}})
+
+    for s in d:
+        r = db(db.grad.student == s['id']).select(db.grad.ALL).first()
+        if r is not None:
+            s['data']['university'] = r.university.name
+            s['data']['blog'] = r.blog
+            s['data']['quote'] = r.yr_quote
+            s['data']['picture'] = r.picture.file_link
+        else:
+            s['data']['university'] = ""
+            s['data']['blog'] = ""
+            s['data']['quote'] = ""
+            s['data']['picture'] = db(db.image.id == 1).select(db.image.file_link).first().file_link
+    f = [i+1 for i in range(0,(len(d)/10)+1)]
+    final_result = {'data':d,'pages':f}
+    return response.json(final_result)
 
 
 @auth.requires_signature()
@@ -150,14 +201,11 @@ def ask():
         print form.vars
     return dict(form=form)
 
-
-@auth.requires_membership('admin')
-def admin():
-    csv_to_dict()
-    return dict(notif="Notif")
-
 @auth.requires_signature()
-def admin_data_univ():
+def get_notif_data():
+    query = db.grad.approved==False
+    query &= db.grad.refused==False
+
     #Now I grab the universities data
     count = db.university.id.count()
     universities = db().select(db.university.approved, count, groupby=db.university.approved)
@@ -167,12 +215,20 @@ def admin_data_univ():
             uni = row[count]
     #Now I grab the grads student profiles data
     count = db.grad.id.count()
-    grads = db().select(db.grad.approved, count, groupby=db.grad.approved)
+    grads = db(query).select(db.grad.approved, count, groupby=db.grad.approved)
     grad = 0
     for row in grads:
         if row.grad.approved == False:
             grad = row[count]
+    return response.json(dict(uni=uni,grad=grad))
 
+@auth.requires_membership('admin')
+def admin():
+    csv_to_dict()
+    return dict(notif="Notif")
+
+@auth.requires_signature()
+def admin_data_univ():
     rows = db(db.university.approved==False).select(db.university.ALL, orderby=~db.university.created_on)
     d = [{'id':r.id,'name': r.name,'lat': r.lat,'lng':r.lng,'country':r.country,'info':r.info,'class':'danger'}
          for r in rows]
@@ -180,7 +236,7 @@ def admin_data_univ():
     e = [{'id':r.id,'name': r.name,'lat': r.lat,'lng':r.lng,'country':r.country,'info':r.info,'class':'','approved':r.approved}
          for r in rows]
     f = [i+1 for i in range(0,((len(e)+len(d))/5)+1)]
-    return response.json(dict(result=d,result_v=e,uni=uni,grad=grad,pages=f))
+    return response.json(dict(result=d,result_v=e,pages=f))
 
 @auth.requires_signature()
 def admin_validate_univ():
@@ -222,27 +278,14 @@ def admin_refuse_grad():
 
 @auth.requires_signature()
 def admin_data_grad():
-    #Now I grab the universities data
-    count = db.university.id.count()
-    universities = db().select(db.university.approved, count, groupby=db.university.approved)
-    uni = 0
-    for row in universities:
-        if row.university.approved == False:
-            uni = row[count]
-    #Now I grab the grads student profiles data
-    count = db.grad.id.count()
-    grads = db().select(db.grad.approved, count, groupby=db.grad.approved)
-    grad = 0
-    for row in grads:
-        if row.grad.approved == False:
-            grad = row[count]
-
-    rows = db(db.grad.approved==False).select(db.grad.ALL, orderby=~db.grad.modified_on)
+    query = db.grad.approved==False
+    query &= db.grad.refused==False
+    rows = db(query).select(db.grad.ALL, orderby=~db.grad.modified_on)
     d = [{'id':r.id,'student': r.student.first_name+' '+r.student.last_name,'university': r.university.name,'link_blog':r.blog,
           'file_link':r.picture.file_link,'quote':r.yr_quote}
          for r in rows]
-    f = [i+1 for i in range(0,(len(d)/5)+1)]
-    return response.json(dict(result=d,uni=uni,grad=grad,pages=f))
+    f = [i+1 for i in range(0,(len(d)/3)+1)]
+    return response.json(dict(result=d,pages=f))
 
 
 @auth.requires_signature()
@@ -333,6 +376,13 @@ def profile_edit():
     return 'ok'
 
 
+@auth.requires_signature()
+def profile_edit_simple():
+    db.auth_user.update_or_insert((db.auth_user.id == auth.user_id),major=request.vars.major)
+    return 'ok'
+
+
+
 def user():
     """
     exposes:
@@ -350,6 +400,9 @@ def user():
     to decorate functions that need access control
     """
     image_form = None
+    user_prom = None
+    if auth.is_logged_in():
+        user_prom = db(db.auth_user.id == auth.user_id).select(db.auth_user.promotion).first().promotion
     user_data = {
         'id':'',
         'university':'',
@@ -359,7 +412,7 @@ def user():
         'refused':False,
         'refused_message':''
     }
-    if request.args(0)=='profile':
+    if request.args(0)=='profile' and user_prom <= YEAR-2:
         image_form = FORM(
         INPUT(_name='image_title',_type='text'),
         INPUT(_name='image_file',_type='file'))
@@ -389,7 +442,15 @@ def user():
                 user_data['refused'] = d[0]['refused']
             if d[0]['refused_message'] != None:
                 user_data['refused_message'] = d[0]['refused_message']
-    return dict(form=auth(),grad_data=user_data)
+    elif request.args(0)=='profile' and user_prom > YEAR-2:
+        tmp_data = db(db.auth_user.id==auth.user_id).select(db.auth_user.ALL).first()
+        user_data = {
+            'major':tmp_data.major,
+            'name':tmp_data.first_name+' '+tmp_data.last_name,
+            'promo':tmp_data.promotion,
+            'email':tmp_data.email
+        }
+    return dict(form=auth(),grad_data=user_data,user_prom=user_prom)
 
 
 @cache.action()

@@ -158,7 +158,7 @@
     </script>
       <!-- Code for timezone detection -->
       {{if is_timezone_unknown:}}
-        <script src="{{=URL('static', 'plugin_timezone/jstz.min.js')}}"></script>
+        <script src="{{=URL('static', 'js/jstz.min.js')}}"></script>
         <script>
           $(function() {
             var tz_name = jstz.determine();

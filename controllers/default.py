@@ -42,6 +42,78 @@ def search():
     return dict(message=T('Search Page'),style=style,promos_list=promos_list)
 
 
+@auth.requires_login()
+def answer():
+    if request.args(0) is None:
+        redirect(URL('default','search',args=['advice']))
+    brouillon = db((db.answer.author == auth.user_id) & (db.answer.is_backup == True)
+                   & (db.answer.question == request.args(0))).select(db.answer.answer_content).first()
+    if brouillon is not None:
+        brouillon = brouillon.answer_content
+    else:
+        brouillon = ""
+    return dict(brouillon=brouillon)
+
+
+@auth.requires_signature()
+def post_answer():
+    backup = json.loads(request.vars.backup)
+    content = request.vars.answer_content
+    qid = request.vars.q_id
+    print backup
+    if backup:
+        print 'update'
+        db.answer.update_or_insert(((db.answer.author == auth.user_id) & (db.answer.is_backup == True) & (db.answer.question == qid)),
+                                   question=qid,answer_content=content, is_backup=True)
+    else:
+        print 'answer'
+        db.answer.update_or_insert(((db.answer.author == auth.user_id) & (db.answer.is_backup == True) & (db.answer.question == qid)),
+                                   question=qid,answer_content=content, is_backup=False,posted_on=datetime.utcnow())
+    return 'ok'
+
+
+@auth.requires_signature()
+def edit_answer():
+    id = request.vars.id
+    content = request.vars.content
+    print content
+    db.answer.update_or_insert((db.answer.id == id),answer_content=content,edited=True,posted_on=datetime.utcnow())
+    return 'ok'
+
+
+@auth.requires_signature()
+def switch_good():
+    id = request.vars.id
+    good = db(db.answer.id == id).select(db.answer.good).first().good
+    db.answer.update_or_insert((db.answer.id == id),good=not good)
+    return 'ok'
+
+
+@auth.requires_signature()
+def delete_answer():
+    id = request.vars.id
+    db(db.answer.id == id).delete()
+    return 'ok'
+
+
+@auth.requires_signature()
+def answers_data():
+    q_id = request.vars.question_id
+    result = db(db.question.id == q_id).select(db.question.ALL).first()
+    q_data = {
+        'author':result.author.first_name+' '+result.author.last_name,
+        'date':pretty.date(change_tz(result.created_on)),
+        'content':str(XML(result.ques_content)),
+        'title':result.title,
+        'done':result.done
+    }
+    results = db((db.answer.question == q_id)&(db.answer.is_backup == False)).select(db.answer.ALL,orderby=db.answer.posted_on)
+    a_data = [{'id':r.id,'author': r.author.first_name+' '+r.author.last_name, 'good':r.good,'edited':r.edited,
+               'is_question_author':auth.user_id==r.question.author,'is_post_author':auth.user_id==r.author,
+               'content':str(XML(r.answer_content)),'date':pretty.date(change_tz(r.posted_on))}
+              for r in results]
+    return response.json(dict(q_data=q_data,a_data=a_data))
+
 def change_tz(date):
     from_zone = tz.gettz('UTC')
     to_zone = tz.gettz(session.user_timezone)

@@ -8,11 +8,11 @@
   * Errors in page using ractive
   * Profile picture form css
 * Add new functions/pages:
-  * Answers page
+  * ~~Answers page~~
   * Index page for student
   * custom error page
-  * Students search page                            [DONE]
+  * ~~Students search page~~
   * Add new year button + New user list button
-  * Profile page for everyone                       [DONE]
+  * ~~Profile page for everyone~~
   * Index page
   * Google drive sharing files

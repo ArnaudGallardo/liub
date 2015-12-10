@@ -1,0 +1,251 @@
+{{extend 'layout2.html'}}
+<div class="container-fluid" id="target"></div>
+<script id="template" type="text/ractive">
+
+    <div class="modal fade" tabindex="-1" role="dialog" id="editMod">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Edit answer:</h4>
+          </div>
+          <div class="modal-body">
+            <div id="summernote_edit"></div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" on-click="save_post">Save changes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-bottom:20px">
+        <a class="btn btn-default btn-xs" href="{{=URL('default','search',args=['advice'])}}"><i class="fa fa fa-chevron-circle-left"></i> Back</a>
+    </div>
+    <div class="jumbotron" style="background-color:rgba(0, 158, 224,.5)">
+        <div class="row" style="border-bottom:1px solid black;margin-bottom:20px">
+            <h2>{% question_data.title %}</h2>
+        </div>
+        <div class="row">
+            <div class="col-md-10 col-md-offset-1">
+                {%% question_data.content %%}
+            </div>
+        </div>
+        <div class="row">
+            <span class="pull-right">Posted {% question_data.date %} by {% question_data.author %}</span>
+        </div>
+    </div>
+
+    {% #answers_data:cpt %}
+        <div class="jumbotron" {% #if good %}style="border-left: 5px lime inset;"{%/if%}>
+            <div class="row" style="border-bottom:1px solid black;margin-bottom:20px">
+                {% #if is_question_author %}
+                    {% #if good==false %}
+                        <button data-id="{% id %}" on-click="switch_good" class="btn btn-success btn-xs">This answers my question</button>
+                    {%else%}
+                        <button data-id="{% id %}" on-click="switch_good" class="btn btn-warning btn-xs">This don't answers my question</button>
+                    {%/if%}
+                {%/if%}
+                {% #if is_post_author %}
+                    <button data-cpt="{% cpt %}" data-id="{% id %}" data-toggle="modal" data-target="#editMod" on-click="edit_post" class="btn btn-default btn-xs">
+                        <i data-cpt="{% cpt %}" data-id="{% id %}" class="fa fa-pencil"></i>
+                    </button>
+                    <button data-id="{% id %}" on-click="delete_post" class="btn btn-default btn-xs">
+                        <i data-id="{% id %}" class="fa fa-times"></i>
+                    </button>
+                {%/if%}
+                <span class="pull-right">{% #if edited %}Edited{% else %}Posted{%/if%} {% date %} by {% author %}</span>
+            </div>
+            <div class="row">
+                <div class="col-md-10 col-md-offset-1">
+                    {%% content %%}
+                </div>
+            </div>
+        </div>
+    {% /answers_data %}
+    <h3>Answer this question:</h3>
+    <div id="summernote">{%% answer_value %%}</div>
+    <div style="padding-bottom:60px">
+        <button on-click="submit_answer" class="btn btn-success pull-right">Submit my answer</button>
+    </div>
+</script>
+<script>
+    var MAIN = new Ractive({
+        el: '#target',
+        template: '#template',
+        delimiters: ['{%', '%}'],
+        tripleDelimiters: ['{%%', '%%}'],
+        data: {
+            question_id:{{=request.args(0)}},
+            question_data:{},
+            answers_data:{},
+            edit_id:"",
+            edit_value:"",
+            answer_value:"{{=XML(brouillon)}}",
+            error:{
+                is:false,
+                message:""
+            },
+            page:1,
+            pages:[]
+        }
+    });
+
+    temp_call();
+
+    function refresh() {
+        $.ajax("{{=URL('default','answers_data', user_signature=True)}}",
+            {
+                data: {
+                    question_id:MAIN.get('question_id')
+                },
+                method: 'POST',
+                success: function (data) {
+                    MAIN.set('question_data', data['q_data']);
+                    MAIN.set('answers_data',data['a_data']);
+                },
+                error: function () {
+                    var error = {
+                        is:true,
+                        message:"Error when loading answers list. Reload the page."
+                    };
+                    MAIN.set('error',error);
+                }
+            }
+        );
+    };
+
+    $(function() {
+        $('#summernote').summernote({
+            height: 250,
+            width: '100%',
+            onChange: function (contents, $editable) {
+                MAIN.set('answer_value',contents);
+                MAIN.set('editing',true);
+            }
+        });
+    });
+
+    $(function() {
+        $('#summernote_edit').summernote({
+            height: 250,
+            width: '100%',
+            onChange: function (contents, $editable) {
+                MAIN.set('edit_value',contents);
+            }
+        });
+    });
+
+    MAIN.on('submit_answer', function(event) {
+        MAIN.set('editing',false);
+        save_answer(false);
+        MAIN.set('answer_value','');
+        $('#summernote').code('');
+        refresh();
+    });
+
+    function temp_call() {
+        if (MAIN.get('editing')) {
+            save_answer(true);
+        }
+        refresh();
+    };
+
+    function save_answer(backup) {
+        $.ajax("{{=URL('default','post_answer', user_signature=True)}}",
+            {
+                data: {
+                    answer_content:MAIN.get('answer_value'),
+                    backup:backup,
+                    q_id:MAIN.get('question_id')
+                },
+                method: 'POST',
+                error: function () {
+                    var error = {
+                        is:true,
+                        message:"Error when sending answer to database. Reload the page."
+                    };
+                    MAIN.set('error',error);
+                }
+            }
+        );
+    };
+
+    MAIN.on('switch_good', function(event) {
+        var t = $(event.original.target);
+        var id = t.data('id');
+        $.ajax("{{=URL('default','switch_good', user_signature=True)}}",
+            {
+                data: {
+                    id:id
+                },
+                method: 'POST',
+                success: function () {
+                    refresh();
+                },
+                error: function () {
+                    var error = {
+                        is:true,
+                        message:"Error when validating the answer. Reload the page."
+                    };
+                    MAIN.set('error',error);
+                }
+            }
+        );
+    });
+    MAIN.on('delete_post', function(event) {
+        var t = $(event.original.target);
+        var id = t.data('id');
+        $.ajax("{{=URL('default','delete_answer', user_signature=True)}}",
+            {
+                data: {
+                    id:id
+                },
+                method: 'POST',
+                success: function () {
+                    refresh();
+                },
+                error: function () {
+                    var error = {
+                        is:true,
+                        message:"Error when deleting the answer. Reload the page."
+                    };
+                    MAIN.set('error',error);
+                }
+            }
+        );
+    });
+    MAIN.on('save_post', function(event) {
+        $.ajax("{{=URL('default','edit_answer', user_signature=True)}}",
+            {
+                data: {
+                    id:MAIN.get('edit_id'),
+                    content:MAIN.get('edit_value')
+                },
+                method: 'POST',
+                success: function () {
+                    $('#editMod').modal('hide');
+                    refresh();
+                },
+                error: function () {
+                    var error = {
+                        is:true,
+                        message:"Error when saving the answer. Reload the page."
+                    };
+                    MAIN.set('error',error);
+                }
+            }
+        );
+    });
+    MAIN.on('edit_post', function(event) {
+        var t = $(event.original.target);
+        var id = t.data('id');
+        var cpt = t.data('cpt');
+        var data = MAIN.get('answers_data');
+        MAIN.set('edit_id',id);
+        $('#summernote_edit').code(data[cpt].content);
+    });
+
+    setInterval(temp_call, 5000);
+</script>

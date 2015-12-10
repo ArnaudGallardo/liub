@@ -185,10 +185,13 @@ db.define_table('answer',
                 Field('answer_content', 'text'),
                 Field('posted_on','datetime', writable=False, readable=False),
                 Field('good', 'boolean'),
+                Field('is_backup','boolean'),
+                Field('edited','boolean')
                 )
 db.answer.author.default = auth.user_id
 db.answer.posted_on.default = datetime.utcnow()
 db.answer.good.default = False
+db.answer.edited.default = False
 
 #TIMEZONE
 is_timezone_unknown = (session.user_timezone is None)

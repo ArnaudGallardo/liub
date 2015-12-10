@@ -60,7 +60,10 @@ def user_bar():
         button = BUTTON(I(_class='fa fa-cog'),_class='btn btn-default dropdown-toggle', _type='button',_id='profileMenu'
                         , **{'_data-toggle': 'dropdown'
                                 ,'_aria-haspopup': 'true', '_aria-expanded': 'false'})
-        ul = UL(head,lang,profile,logout,admin,_class='dropdown-menu')
+        if admin is not None:
+            ul = UL(head,lang,profile,logout,admin,_class='dropdown-menu')
+        else:
+            ul = UL(head,lang,profile,logout,_class='dropdown-menu')
         bar = DIV(button,ul,_class='dropdown')
 
     return bar

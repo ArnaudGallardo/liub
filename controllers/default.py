@@ -259,7 +259,7 @@ def test_populate():
 def universities():
     data = None
     if request.args(0)=='maps':
-        result = db().select(db.university.id,db.university.lat,db.university.lng,db.university.name,db.university.country,db.university.info)
+        result = db(db.university.approved==True).select(db.university.id,db.university.lat,db.university.lng,db.university.name,db.university.country,db.university.info)
         result = {'places' : result}
     elif request.args(0)=='names':
         result = db().select(db.university.name,db.university.id)
@@ -288,7 +288,8 @@ def question_process(form):
 @auth.requires_login()
 def ask():
     form = SQLFORM(db.question)
-    form.element(_id='question_university')['_placeholder']='University'
+    form.element(_id='question_title')['_placeholder']='Enter your question here...'
+    form.element(_id='question_university')['_placeholder']='Related university'
     form.element(_id='question_university')['_data-provide']='typeahead'
     form.element(_id='question_university')['_autocomplete']='off'
     if form.process(onvalidation=question_process).accepted:

@@ -18,6 +18,9 @@ myconf = AppConfig(reload=True)
 #GLOBAL VARIABLES
 YEAR = 2015
 TYPES = ['Documents','Classes','Campus Life','Other']
+MAJOR = ["CS","PHY","CHY","MATH","BIO","MCS","PC"]
+MAJOR_LG = ["Computer Science","Physics","Chemistry","Mathematics","Biology","Math/CS","Phys/Chem"]
+MAJOR_OPTIONS = [OPTION(MAJOR_LG[i],_value=MAJOR[i]) for i in range(0,len(MAJOR))]
 
 if not request.env.web2py_runtime_gae:
     ## if NOT running on Google App Engine use SQLite or other DB
@@ -86,7 +89,7 @@ custom_auth_table.first_name.requires =   IS_NOT_EMPTY(error_message=auth.messag
 custom_auth_table.last_name.requires =   IS_NOT_EMPTY(error_message=auth.messages.is_empty)
 custom_auth_table.password.requires = [CRYPT()]
 custom_auth_table.promotion.requires = IS_IN_SET([2013,2014,2015]) #DONT FORGET TO REMOVE
-custom_auth_table.major.requires = IS_IN_SET(["CS","PHY","CHY","MATH","BIO","MCS","PC"])
+custom_auth_table.major.requires = IS_IN_SET(MAJOR)
 custom_auth_table.email.requires = [
   IS_EMAIL(error_message=auth.messages.invalid_email),
   IS_NOT_IN_DB(db, custom_auth_table.email)]
@@ -171,9 +174,14 @@ db.define_table('question',
                 Field('done', 'boolean'),
                 )
 db.question.content_type.requires = IS_IN_SET(TYPES)
-#db.question.author.default = auth.user_id
-#db.question.created_on.default = datetime.utcnow()
-#db.question.done.default = False
+db.question.author.default = auth.user_id
+db.question.created_on.default = datetime.utcnow()
+db.question.done.default = False
+
+
+#TIMEZONE
+is_timezone_unknown = (session.user_timezone is None)
+user_timezone = session.user_timezone or 'UTC'
 
 
 # after defining tables, uncomment below to enable auditing

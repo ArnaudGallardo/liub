@@ -1,9 +1,7 @@
 <div id='target'></div>
 <script id="template" type="text/ractive">
     <div id="map"></div>
-    <p>{% univ_dict %}</p>
 </script>
-{{print session.language}}
 <script>
 
     // Ractive object
@@ -22,6 +20,7 @@
     var map = $('#map').travelmap({
         data : MAIN.get('univ_dict'),
         width: '100%',
+        zoomControl: true,
         theme: {{=XML(style)}}
     });
     refresh();

@@ -1,4 +1,5 @@
-import math, os, json, uuid
+import math, os, json, uuid, pretty
+from dateutil import tz
 from gluon.contrib.populate import populate
 
 # -*- coding: utf-8 -*-
@@ -29,7 +30,6 @@ def search():
     style = None
     content = None
     if request.args(0)=='advice':
-        content = db().select(db.question.ALL)
         print 'advice'
     elif request.args(0)=='user':
         print 'user'
@@ -37,6 +37,60 @@ def search():
         style = open(os.path.join(request.folder, 'static', 'json', 'style.json'), 'rb').read()
         print 'university'
     return dict(message=T('Search Page'),style=style, content=content)
+
+
+def change_tz(date):
+    from_zone = tz.gettz('UTC')
+    to_zone = tz.gettz(session.user_timezone)
+    date = date.replace(tzinfo=from_zone)
+    date = date.astimezone(to_zone)
+    date = datetime(date.year,date.month,date.day,date.hour,date.minute,date.second,date.microsecond)
+    return date
+
+
+@auth.requires_signature()
+def question_data():
+    univ = request.vars['search_data[univ]']
+    type = request.vars['search_data[type]']
+    content = request.vars['search_data[content]']
+    major = request.vars['search_data[major]']
+    q_univ = True
+    if univ != "":
+        univ_id = db(db.university.name==univ).select(db.university.id).first()
+        q_univ = db.question.university == univ_id
+    q_type = True
+    if type != "" and type != "All":
+        q_type = db.question.content_type == type
+    q_content = True
+    if content != "":
+        q_content = db.question.ques_content == content
+    q_major = True
+    if major != "" and major != "All":
+        db_students = db(db.auth_user.major == major).select(db.auth_user.id)
+        li_students = []
+        for s in db_students:
+            li_students.append(s.id)
+        print li_students
+        q_major = db.question.author.belongs(li_students)
+    q_content = True
+    if content != "":
+        q_content = False
+        for word in content.split():
+            q_content |= db.question.keywords.contains(word)
+            q_content |= db.question.title.contains(word)
+            q_content |= db.question.ques_content.contains(word)
+
+    query = q_univ
+    query &= q_type
+    query &= q_major
+    query &= q_content
+
+    results = db(query).select(db.question.ALL)
+    d = [{'id':r.id,'done': r.done,'icon': str(get_icon(r.content_type)),'title':r.title,
+          'university':r.university.name,'content':str(XML(r.ques_content)),'keywords':r.keywords,
+          'author':r.author.first_name+' '+r.author.last_name,'date':pretty.date(change_tz(r.created_on))}
+         for r in results]
+    return response.json(d)
 
 
 @auth.requires_signature()
@@ -360,3 +414,9 @@ def call():
 def link(): return response.download(request,db,attachment=False)
 
 
+def set_timezone():
+    """Ajax call to set the timezone information for the session."""
+    tz_name = request.vars.name
+    from pytz import all_timezones_set
+    if tz_name in all_timezones_set:
+        session.user_timezone = tz_name
